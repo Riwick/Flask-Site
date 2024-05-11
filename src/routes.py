@@ -1,4 +1,7 @@
-from flask import render_template, Blueprint, request, flash, get_flashed_messages, session, redirect, url_for, abort
+from flask import render_template, Blueprint, request, flash, session, redirect, url_for, abort
+
+from src.database import db
+
 
 app_route = Blueprint("route", __name__)
 
