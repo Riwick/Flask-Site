@@ -1,17 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask
 
-app = Flask(__name__)
+from src.routes import app_route
 
+app = Flask("Riwi Site", template_folder="src/templates/")
+app.register_blueprint(app_route)
 
-@app.route("/")
-def index():
-    return render_template("index.html", title="Главная страница")
-
-
-@app.route("/about")
-def about():
-    return render_template("about.html", title="Про нас")
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+app.run(debug=True)
