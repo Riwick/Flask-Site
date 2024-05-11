@@ -5,7 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" style="margin-top: 30px; margin-bottom: 30px;">
+    <div class="container py-5">
+      <h1 class="text-body-emphasis" style="text-align: center">Это страница обратной связи</h1>
+      <p class="col-lg-8 mx-auto lead">
+        Здесь вы можете отправить нам своё сообщение, чтобы мы забыли про вас, так как у нас легли сервера и ваше сообщение улетело в труху. Пожалуйста, при заполнении формы подумайте о нашем благе и не пишите оскорбления, так как нам очень обидно и мы всю ночь потом будем плакать. Надеемся на сотрудничество.
+      </p>
+    </div>
+    <div class="container" style="margin-top: 30px; margin-bottom: 30px;">
         {% for cat, msg in get_flashed_messages(with_categories=True) %}
             {% if cat == "success" %}
               <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
@@ -21,20 +27,24 @@
             </div>
             {% endif %}
         {% endfor %}
-    <form action="/contacts" method="post">
-        <div class="mb-3">
-          <label class="form-label">Имя</label>
-          <input type="text" class="form-control" name="username" >
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Email адрес</label>
-          <input type="email" class="form-control" name="email" placeholder="name@example.com" >
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Текст сообщения</label>
-          <textarea class="form-control" rows="5" name="message" ></textarea>
-        </div>
-        <input class="btn btn-success" type="submit" value="Отправить">
-    </form>
-</div>
+        <form action="/contacts" method="post">
+            <div class="mb-3">
+              <label class="form-label">Имя</label>
+              <input type="text" class="form-control" name="username">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Контактный номер</label>
+              <input type="tel" class="form-control" name="username" placeholder="+1-234-56-78">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email адрес</label>
+              <input type="email" class="form-control" name="email" placeholder="name@example.com" >
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Текст сообщения</label>
+              <textarea class="form-control" rows="5" name="message" ></textarea>
+            </div>
+            <input class="btn btn-primary btn-md me-md-2" type="submit" value="Отправить">
+        </form>
+    </div>
 {% endblock %}

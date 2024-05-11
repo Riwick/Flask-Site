@@ -5,13 +5,17 @@
 {% endblock %}
 
 {% block content %}
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <main class="px-3">
-        <h1>Cover your page.</h1>
-        <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
-        <p class="lead">
-          <a href="#" class="btn btn-lg btn-light fw-bold border-white bg-white">Learn more</a>
-        </p>
-    </main>
-</div>
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5" style="margin: 100px; margin-top: 50px; margin-bottom: 50px;">
+      <div class="col-10 col-sm-8 col-lg-6">
+        <img src="static/images/bootstrap-themes.png" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">
+      </div>
+      <div class="col-lg-6">
+        <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Заглушка главной страницы</h1>
+        <p class="lead">Какой-то текст, объясняющий что-то пользователю. Мне лень его писать, да и он должен быть достаточной длины, так что вот вам анекдот: Сказка была такой страшной, что уже после первой главы воспитательница вывела всю группу покурить. Надеюсь вам понравилось :)</p>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+          <a type="button" class="btn btn-primary btn-lg px-4 me-md-2" href="/login">Войти</a>
+          <a type="button" class="btn btn-outline-secondary btn-lg px-4" href="#">Зарегистрироваться</a>
+        </div>
+      </div>
+    </div>
 {% endblock %}
