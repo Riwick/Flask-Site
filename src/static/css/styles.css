@@ -1,1 +1,15 @@
+.bg-body-tertiary-custom {
+    --bs-bg-opacity: 1;
 
+body {
+    display: flex;
+}
+
+row-custom {
+    margin-left: 255px;
+}
+
+.text-body-secondary {
+    --bs-text-opacity: 1;
+    color: white !important;
+}

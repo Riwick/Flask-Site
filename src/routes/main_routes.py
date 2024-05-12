@@ -20,6 +20,5 @@ def contacts():
             flash("Сообщение отправлено", category="success")
         else:
             flash("Ошибка отправки сообщения", category="error")
-        print(request.form)
 
     return render_template("contacts.html", title="Обратная связь")
