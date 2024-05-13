@@ -14,28 +14,43 @@
 {% if not products %}
   <h1 class="text-body-emphasis" style="text-align: center">Тут пока ничего нет...</h1>
 {% else %}
+
+  {% for cat, msg in get_flashed_messages(with_categories=True) %}
+    {% if cat == "success" %}
+      <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
+        <div>
+          {{ msg }}
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-warning d-flex align-items-center shadow rounded" role="alert" style="height: 50px;">
+        <div>
+          {{ msg }}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+
   {% for product in products %}
-    <div class="py-5">
+    <div style="margin-top: 30px; padding: 0;">
         <div class="container">
           <div class="row-custom">
             <div class="col">
               <div class="card shadow-sm">
-                <img src="class=" height="250px;">
+                <a href="/products/{{ product.product_id }}"><img src="{{ url_for('uploaded_file', filename=product.image) }}" height="300px;" width="98%;" style="margin: 1%;  border-radius: 5px;"></a>
                 <div class="card-body">
-                  <p class="card-text">{{ product.title }}</p>
-                  <p class="card-text">{{ product.short_description }}</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <a  class="btn btn-md btn-warning" href="/products/{{ product.product_id }}">Подробнее</a>
-                    </div>
-                    <small class="text-body-secondary">Дата создания: {{ product.created_at.date().isoformat() }}</small>
-                  </div>
+                  <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.title }}</a>
+                  <p class="card-text" >{{ product.short_description }}</p>
+                  <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
+                  <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить</a>
+                  <a href="#" class="btn btn-success shadow-sm" style="margin-top: 10px;">Добавить в корзину</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
     </div>
+
   {% endfor %}
 {% endif %}
 <!--<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">-->
@@ -89,6 +104,23 @@
 <!--      </ul>-->
 <!--    </div>-->
 <!--  </div>-->
-
-
+  <div class="container" style="align-items: center; margin-top: 50px; justify-content: center; display: flex;">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 {% endblock %}

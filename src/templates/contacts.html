@@ -30,19 +30,19 @@
         <form action="/contacts" method="post">
             <div class="mb-3">
               <label class="form-label">Имя</label>
-              <input type="text" class="form-control" name="username">
+              <input type="text" class="form-control" name="username" required>
             </div>
             <div class="mb-3">
               <label class="form-label">Контактный номер</label>
-              <input type="tel" class="form-control" name="username" placeholder="+1-234-56-78">
+              <input type="tel" class="form-control" name="phone-number" placeholder="+1-234-56-78" required>
             </div>
             <div class="mb-3">
               <label class="form-label">Email адрес</label>
-              <input type="email" class="form-control" name="email" placeholder="name@example.com" >
+              <input type="email" class="form-control" name="email" placeholder="name@example.com" required>
             </div>
             <div class="mb-3">
               <label class="form-label">Текст сообщения</label>
-              <textarea class="form-control" rows="5" name="message" ></textarea>
+              <textarea class="form-control" rows="5" name="message" required></textarea>
             </div>
             <input class="btn btn-warning btn-md me-md-2" type="submit" value="Отправить">
         </form>

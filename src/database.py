@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Annotated
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Text, DECIMAL, String, Numeric
+from sqlalchemy import Text, String
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 
 
@@ -21,17 +21,28 @@ class Base(DeclarativeBase):
         return f"<{self.__class__.__name__} {', '.join(cols)}>"
 
 
-db = SQLAlchemy(model_class=Base)
+db = SQLAlchemy(model_class=Base, engine_options={"echo": True})
 
 integer_pk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(default=datetime.datetime.utcnow)]
+nullable_str = Annotated[str, mapped_column(nullable=False)]
+nullable_int = Annotated[int, mapped_column(nullable=False)]
 
 
 class Product(db.Model):
     product_id: Mapped[integer_pk]
-    title: Mapped[str] = mapped_column(unique=True, nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     short_description: Mapped[str] = mapped_column(String(255), nullable=True)
+    image: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     price: Mapped[Decimal] = mapped_column(nullable=False)
-    category_id: Mapped[int] = mapped_column(nullable=False)
+    category_id: Mapped[nullable_int]
     created_at: Mapped[created_at]
+
+
+class Feedback(db.Model):
+    feedback_id: Mapped[integer_pk]
+    username: Mapped[nullable_str]
+    email: Mapped[nullable_str]
+    phone_number: Mapped[nullable_str]
+    message: Mapped[nullable_str]

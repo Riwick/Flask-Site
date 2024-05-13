@@ -28,10 +28,22 @@ def add_product():
         desc = request.form["desc"]
         price = request.form["price"]
         cat_id = request.form["cat_id"]
+        image = request.files["image"]
 
-        detail, status = ProductQueries.add_product_query(title, short_desc, desc, price, cat_id)
+        detail, status = ProductQueries.add_product_query(title, short_desc, desc, price, cat_id, image)
         if status:
             flash("Продукт добавлен", category="success")
         else:
             flash(detail, category="error")
     return render_template("add_product.html", title="Добавление продукта")
+
+
+@products_router.route('/products/<int:product_id>/delete_product/', methods=["DELETE", "POST", "GET"])
+def delete_product(product_id: int):
+    detail, status = ProductQueries.delete_product_query(product_id)
+    if status:
+        flash(detail, category="success")
+    else:
+        flash(detail, category="error")
+
+    return redirect("/products")
