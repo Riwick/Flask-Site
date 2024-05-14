@@ -6,7 +6,22 @@
 
 {% block content %}
 <div class="container mb-5" style="height: 660px; vertical-align: middle; width: 400px; padding-top: 150px;">
-  <form>
+  {% for cat, msg in get_flashed_messages(with_categories=True) %}
+      {% if cat == "success" %}
+      <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
+        <div>
+          {{ msg }}
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-warning d-flex align-items-center shadow rounded" role="alert" style="height: 50px;">
+        <div>
+          {{ msg }}
+        </div>
+      </div>
+      {% endif %}
+  {% endfor %}
+  <form method="post">
     <h1 class="h1 text-center">Вход</h1>
 
     <div class="mb-3">
@@ -21,12 +36,13 @@
       <label class="form-check-label" for="flexCheckDefault">
         Запомнить меня
       </label>
+      <a href="#" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" style="margin-left: 30%;">Забыли пароль?</a>
     </div>
     <input class="btn btn-warning w-100 py-2" type="submit" value="Войти" style="margin-bottom: 20px;">
     <button class="w-100 py-2 mb-2 btn btn-outline-secondary rounded-3" type="submit">
       Войти с помощью GitHub
     </button>
-    <p class="text-center" style="padding-top: 10px;"><a href="#" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Забыли пароль?</a></p>
   </form>
+  <p class="text-center" style="padding-top: 10px;"><a href="/register" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Нет аккаунта? Зарегистрируйся!</a></p>
 </div>
 {% endblock %}

@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, render_template, send_from_directory
 
 from src.routes.user_routes import app_router
@@ -14,6 +16,7 @@ app.static_folder = "src/static"
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.permanent_session_lifetime = datetime.timedelta(days=10)  # Задание срока жизни сессии
 
 db.init_app(app)
 

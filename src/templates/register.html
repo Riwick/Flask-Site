@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+<div class="container mb-5" style="height: 660px; vertical-align: middle; width: 400px; padding-top: 150px;">
+    {% for cat, msg in get_flashed_messages(with_categories=True) %}
+        {% if cat == "success" %}
+            <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
+                <div>
+                    {{ msg }}
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning d-flex align-items-center shadow rounded" role="alert" style="height: 50px;">
+                <div>
+                    {{ msg }}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    <form method="post">
+        <h1 class="h1 text-center">Регистрация</h1>
+        <div class="mb-3">
+            <input type="text" class="form-control" name="username" placeholder="Имя пользователя" required>
+        </div>
+        <div class="mb-3">
+            <input type="email" class="form-control" name="email" placeholder="Name@example.com" required>
+        </div>
+        <div class="mb-3">
+            <input type="tel" class="form-control" name="phone" placeholder="+1-234-56-78" required>
+        </div>
+        <div style="display: flex; justify-content: space-around;">
+            <div style="margin-right: 10px;">
+                <input type="password" class="form-control" name="password" placeholder="Пароль" required>
+            </div>
+            <div class="mb-3" style="margin-left: 10px;">
+                <input type="password" class="form-control" name="password-confirm" placeholder="Повторите пароль" required>
+            </div>
+        </div>
+        <input class="btn btn-warning w-100 py-2" type="submit" value="Зарегистрироваться" style="margin-bottom: 20px;">
+        <button class="w-100 py-2 mb-2 btn btn-outline-secondary rounded-3" type="submit">
+            Войти с помощью GitHub
+        </button>
+    </form>
+  <p class="text-center" style="padding-top: 10px;"><a href="/login" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Есть аккаунт? Войди!</a></p>
+</div>
+{% endblock %}
