@@ -4,7 +4,7 @@ from decimal import Decimal
 from sqlalchemy import select, insert, delete
 
 from src.database import Product, db
-from src.routes.utils import allowed_file, UPLOAD_FOLDER
+from src.routes.utils import allowed_file, PRODUCTS_UPLOAD_FOLDER
 
 
 class ProductQueries:
@@ -35,7 +35,7 @@ class ProductQueries:
                 return "Для создания продукта необходимо загрузить изображение", False
 
             if image and allowed_file(image.filename):
-                image.save(os.path.join(UPLOAD_FOLDER, image.filename))
+                image.save(os.path.join(PRODUCTS_UPLOAD_FOLDER, image.filename))
 
             query = (
                 select(Product)

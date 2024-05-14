@@ -1,4 +1,4 @@
-UPLOAD_FOLDER = "src/static/images/products_images/"
+PRODUCTS_UPLOAD_FOLDER = "src/static/images/products_images/"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 
@@ -15,3 +15,5 @@ def validate_user_register(username, password, password_confirm, email, phone):
 
     else:
         return "Для регистрации необходимо заполнить все поля", False
+
+

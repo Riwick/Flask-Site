@@ -27,6 +27,7 @@ integer_pk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(default=datetime.datetime.utcnow)]
 not_nullable_str = Annotated[str, mapped_column(nullable=False)]
 not_nullable_int = Annotated[int, mapped_column(nullable=False)]
+is_staff = Annotated[bool, mapped_column(default=False)]
 
 
 class Product(db.Model):
@@ -38,6 +39,8 @@ class Product(db.Model):
     price: Mapped[Decimal] = mapped_column(nullable=False)
     category_id: Mapped[not_nullable_int]
     created_at: Mapped[created_at]
+
+    repr_cols = ("description", "price", "category_id")
 
 
 class Feedback(db.Model):
@@ -54,4 +57,11 @@ class User(db.Model):
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     phone: Mapped[str] = mapped_column(nullable=False, unique=True)
     password: Mapped[not_nullable_str]
+
+    user_image: Mapped[str] = mapped_column(default="default_user_avatar.jpg", nullable=False)
     register_at: Mapped[created_at]
+
+    is_staff: Mapped[is_staff]
+    is_superuser: Mapped[is_staff]
+
+    repr_cols = ("password", "register_at", "user_image")

@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, flash, make_response, session
+from flask_login import login_required
 
 from src.routes.queries.main_queries import MainQueries
 
@@ -21,6 +22,7 @@ def about():
 
 
 @main_router.route("/contacts", methods=["GET", "POST"])
+@login_required
 def contacts():
     if request.method == "POST":
         username = request.form["username"]

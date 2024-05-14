@@ -2,4 +2,5 @@
 .venv
 __pycache__/
 src/.env
-products_images/.
+products_images/
+user_images/

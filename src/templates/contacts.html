@@ -30,15 +30,15 @@
         <form action="/contacts" method="post">
             <div class="mb-3">
               <label class="form-label">Имя</label>
-              <input type="text" class="form-control" name="username" required>
+              <input type="text" class="form-control" name="username" required value="{{ current_user.get_username() }}">
             </div>
             <div class="mb-3">
               <label class="form-label">Контактный номер</label>
-              <input type="tel" class="form-control" name="phone-number" placeholder="+1-234-56-78" required>
+              <input type="tel" class="form-control" name="phone-number" placeholder="+1-234-56-78" required value="{{ current_user.get_phone_number() }}">
             </div>
             <div class="mb-3">
               <label class="form-label">Email адрес</label>
-              <input type="email" class="form-control" name="email" placeholder="name@example.com" required>
+              <input type="email" class="form-control" name="email" placeholder="name@example.com" required value="{{ current_user.get_email() }}">
             </div>
             <div class="mb-3">
               <label class="form-label">Текст сообщения</label>
