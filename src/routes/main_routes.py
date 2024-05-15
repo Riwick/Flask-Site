@@ -25,12 +25,8 @@ def about():
 @login_required
 def contacts():
     if request.method == "POST":
-        username = request.form["username"]
-        email = request.form["email"]
-        phone_number = request.form["phone-number"]
-        message = request.form["message"]
-
-        detail, status = MainQueries.add_feedback(username, email, phone_number, message)
+        detail, status = MainQueries.add_feedback_query(request.form["username"], request.form["email"],
+                                                        request.form["phone-number"], request.form["message"])
         if status:
             flash(detail, category="success")
         else:
@@ -49,6 +45,8 @@ def test_route():
 
 
 data = [1, 2, 3, 4]
+
+
 @main_router.route("/session/")
 def session_route():
     session.permanent = True  # Параметр, необходимый для сохранения сессии после закрытия браузера
@@ -56,5 +54,5 @@ def session_route():
         session["data"] = data
     else:
         session["data"][1] += 1
-        session.modified = True
+        session.modified = True  # Параметр, указывающий браузеру, что мы обновили данные в сессии
     return f"session['data']: {session['data']}"

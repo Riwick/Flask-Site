@@ -1,6 +1,7 @@
 import datetime
+import os.path
 
-from flask import Flask, render_template, send_from_directory, url_for, redirect
+from flask import Flask, render_template, send_from_directory, url_for, redirect, flash
 from flask_login import LoginManager
 
 from src.routes.user_routes import user_router
@@ -14,16 +15,27 @@ from src.routes.utils import PRODUCTS_UPLOAD_FOLDER
 
 app = Flask("Riwi_Site", template_folder="src/templates/")
 
+
+if not os.path.exists("src/static/images/products_images/"):  # создание папки для изображений продуктов
+    os.mkdir("src/static/images/products_images/")
+
+if not os.path.exists("src/static/images/user_images/"):  # создание папки для изображений пользователей
+    os.mkdir("src/static/images/user_images/")
+
+
 app.static_folder = "src/static"
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app.config["PRODUCT_UPLOAD_FOLDER"] = PRODUCTS_UPLOAD_FOLDER
 app.config["USER_UPLOAD_FOLDER"] = USER_UPLOAD_FOLDER
-app.permanent_session_lifetime = datetime.timedelta(days=10)  # Задание срока жизни сессии
+# app.permanent_session_lifetime = datetime.timedelta(days=10)  # Задание срока жизни сессии
 
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = "route.login"
+login_manager.login_message = "Войдите в аккаунт для доступа к закрытым страницам"
+login_manager.login_message_category = "success"
 
 
 db.init_app(app)
@@ -59,9 +71,10 @@ def load_user(user_id: int):
     return UserLogin().get_user_from_db(user_id, db)
 
 
-@login_manager.unauthorized_handler
-def unauthorized():
-    return redirect("/login")
+# @login_manager.unauthorized_handler
+# def unauthorized():
+#     flash("Войдите в аккаунт для доступа к закрытым страницам", category="success")
+#     return redirect("/login")
 
 
 if __name__ == '__main__':

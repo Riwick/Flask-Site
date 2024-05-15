@@ -6,7 +6,7 @@ from src.database import Feedback, db
 class MainQueries:
 
     @staticmethod
-    def add_feedback(username, email, phone_number, message):
+    def add_feedback_query(username, email, phone_number, message):
         try:
             if username and email and phone_number and message:
                 stmt = (

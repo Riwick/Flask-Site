@@ -1,4 +1,5 @@
 import datetime
+import enum
 from decimal import Decimal
 from typing import Annotated
 
@@ -26,6 +27,7 @@ db = SQLAlchemy(model_class=Base, engine_options={"echo": True})
 integer_pk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(default=datetime.datetime.utcnow)]
 not_nullable_str = Annotated[str, mapped_column(nullable=False)]
+nullable_str = Annotated[str, mapped_column(nullable=True, default="")]
 not_nullable_int = Annotated[int, mapped_column(nullable=False)]
 is_staff = Annotated[bool, mapped_column(default=False)]
 
@@ -51,11 +53,23 @@ class Feedback(db.Model):
     message: Mapped[not_nullable_str]
 
 
+class Country(enum.Enum):
+    Russia = "Россия"
+    Belarus = "Беларусь"
+    Kazakhstan = "Казахстан"
+
+
 class User(db.Model):
     user_id: Mapped[integer_pk]
+    name: Mapped[nullable_str]
+    surname: Mapped[nullable_str]
     username: Mapped[not_nullable_str]
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
-    phone: Mapped[str] = mapped_column(nullable=False, unique=True)
+    phone: Mapped[str] = mapped_column(unique=True, nullable=False)
+    address: Mapped[nullable_str]
+    additional_address: Mapped[nullable_str]
+    country: Mapped["Country"] = mapped_column(nullable=True, default="")
+
     password: Mapped[not_nullable_str]
 
     user_image: Mapped[str] = mapped_column(default="default_user_avatar.jpg", nullable=False)
@@ -64,4 +78,4 @@ class User(db.Model):
     is_staff: Mapped[is_staff]
     is_superuser: Mapped[is_staff]
 
-    repr_cols = ("password", "register_at", "user_image")
+    repr_cols = ("password", "register_at", "user_image", "phone", "name", "surname", "address")

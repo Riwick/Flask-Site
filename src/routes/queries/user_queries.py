@@ -7,7 +7,7 @@ from src.database import db, User
 class UserQueries:
 
     @staticmethod
-    def create_user(username, password, email, phone):
+    def create_user_query(username, password, email, phone):
         try:
             stmt = (
                 insert(User).values(username=username, email=email, phone=phone, password=password)
@@ -25,7 +25,7 @@ class UserQueries:
             return "Во время регистрации произошла ошибка, попробуйте ещё раз позже", False
 
     @staticmethod
-    def select_user_by_email(email: str):
+    def select_user_by_email_query(email: str):
         try:
             query = (
                 select(User).filter(User.email == email)

@@ -23,14 +23,9 @@ def get_one_product(product_id: int):
 @products_router.route("/add_product/", methods=["GET", "POST"])
 def add_product():
     if request.method == "POST":
-        title = request.form["title"]
-        short_desc = request.form["short_desc"]
-        desc = request.form["desc"]
-        price = request.form["price"]
-        cat_id = request.form["cat_id"]
-        image = request.files["image"]
-
-        detail, status = ProductQueries.add_product_query(title, short_desc, desc, price, cat_id, image)
+        detail, status = ProductQueries.add_product_query(request.form["title"], request.form["short_desc"],
+                                                          request.form["desc"],  request.form["price"],
+                                                          request.form["cat_id"],  request.files["image"])
         if status:
             flash("Продукт добавлен", category="success")
         else:

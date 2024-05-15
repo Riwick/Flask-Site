@@ -112,3 +112,22 @@ border-radius: var(--bs-dropdown-item-border-radius, 0);
     border-radius: var(--bs-border-radius);
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
+
+.main-page-icon {
+  height: 30px;
+  width: 30px;
+  margin: 0;
+}
+
+.profile-image {
+  margin: 5px;
+  margin-left: 0;
+  height: 300px;
+  width: 300px;
+
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+}
