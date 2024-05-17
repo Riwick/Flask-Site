@@ -21,7 +21,7 @@
               <li><a href="/products" class="nav-link px-2 text-white">Каталог</a></li>
               <li><a href="/contacts" class="nav-link px-2 text-white">Обратная связь</a></li>
               <li><a href="/about" class="nav-link px-2 text-white">Про нас</a></li>
-              {% if current_user.is_staff or current_user.is_superuser %}
+              {% if current_user.is_superuser_or_is_staff() %}
                 <li><a href="/add_product" class="nav-link px-2 text-white">Добавить продукт</a></li>
               {% endif %}
           </ul>
@@ -38,7 +38,7 @@
                     </button>
                     <ul class="dropdown-content text-small shadow show" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 34px);" data-popper-placement="bottom-end">
                       <li><a class="dropdown-item" href="/profile">Профиль</a></li>
-                      <li><a class="dropdown-item" href="#">Корзина</a></li>
+                      <li><a class="dropdown-item" href="/basket">Корзина</a></li>
                         <li><hr class="dropdown-divider"></li>
                       <li><a class="dropdown-item" href="/logout">Выйти</a></li>
                     </ul>
@@ -59,7 +59,7 @@
             <li class="nav-item"><a href="/products" class="nav-link px-2 text-body-secondary">Каталог</a></li>
             <li class="nav-item"><a href="/contacts" class="nav-link px-2 text-body-secondary">Обратная связь</a></li>
             <li class="nav-item"><a href="/about" class="nav-link px-2 text-body-secondary">Про нас</a></li>
-            {% if current_user.is_staff or current_user.is_superuser %}
+            {% if current_user.is_superuser_or_is_staff() %}
                 <li class="nav-item"><a href="/add_product" class="nav-link px-2 text-body-secondary">Добавить продукт</a></li>
             {% endif %}
         </ul>

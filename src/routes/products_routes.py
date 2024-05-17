@@ -1,15 +1,24 @@
 from flask import Blueprint, render_template, abort, request, redirect, flash
+from flask_paginate import Pagination, get_page_parameter
 
 from src.routes.queries.products_queries import ProductQueries
-
+from src.routes.utils import get_pagination
 
 products_router = Blueprint("products_router", __name__)
+
+PER_PAGE = 10
 
 
 @products_router.route("/products/", methods=["GET"])
 def get_all_products():
-    products = ProductQueries.get_all_products_query()
-    return render_template("products.html", products=products, title="Каталог")
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+
+    products = ProductQueries.get_all_products_query_with_pagination(page, PER_PAGE)
+    all_products = ProductQueries.get_all_products_query()
+
+    return render_template("products.html",
+                           products=products,
+                           title="Каталог", pagination=get_pagination(page=page, per_page=PER_PAGE, total=all_products))
 
 
 @products_router.route("/products/<int:product_id>/", methods=["GET"])
@@ -42,3 +51,5 @@ def delete_product(product_id: int):
         flash(detail, category="error")
 
     return redirect("/products")
+
+

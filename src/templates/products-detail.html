@@ -11,7 +11,7 @@
         <p>{{ product.short_description }}</p>
         <p class="text-break">{{ product.description }}</p>
         <p class="card" style="font-size: 26px; padding: 5px; text-align: center;">{{ product.price }} руб.</p>
-        {% if current_user.is_staff or current_user.is_superuser %}
+        {% if current_user.is_superuser_or_is_staff() %}
             <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm">Удалить</a>
         {% endif %}
         <a href="#" class="btn btn-success shadow-sm" style="">Добавить в корзину</a>

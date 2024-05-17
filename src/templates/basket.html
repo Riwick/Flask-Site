@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="container py-5">
+    <h1 class="text-body-emphasis" style="text-align: center">Корзина пользователя {{ current_user.get_email() }}</h1>
+  </div>
+{% if not basket.basket_products %}
+  <h1 class="text-body-emphasis" style="text-align: center">Тут пока ничего нет...</h1>
+{% else %}
+  {% for cat, msg in get_flashed_messages(with_categories=True) %}
+    {% if cat == "success" %}
+      <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
+        <div>
+          {{ msg }}
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-warning d-flex align-items-center shadow rounded" role="alert" style="height: 50px;">
+        <div>
+          {{ msg }}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+
+  {% for product in basket.basket_products %}
+    <div style="margin-top: 30px; padding: 0;">
+        <div class="container">
+          <div class="row-custom">
+            <div class="col">
+              <div class="card shadow-sm">
+                <a href="/products/{{ product.product_id }}"><img src="{{ url_for('uploaded_product_file', filename=product.image) }}" height="300px;" width="98%;" style="margin: 1%;  border-radius: 5px;"></a>
+                <div class="card-body">
+                  <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.product_id }}</a>
+                  <p class="card-text" >{{ product.short_description }}</p>
+                  <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
+                  <a href="#" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+  {% endfor %}
+{% endif %}
+
+{% endblock %}

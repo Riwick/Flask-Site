@@ -4,8 +4,8 @@ from decimal import Decimal
 from typing import Annotated
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Text, String
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
+from sqlalchemy import Text, String, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship
 
 
 class Base(DeclarativeBase):
@@ -26,8 +26,8 @@ db = SQLAlchemy(model_class=Base, engine_options={"echo": True})
 
 integer_pk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(default=datetime.datetime.utcnow)]
-not_nullable_str = Annotated[str, mapped_column(nullable=False)]
-nullable_str = Annotated[str, mapped_column(nullable=True, default="")]
+not_nullable_str = Annotated[str, mapped_column(String(200), nullable=False)]
+nullable_str = Annotated[str, mapped_column(String(200), nullable=True, default="")]
 not_nullable_int = Annotated[int, mapped_column(nullable=False)]
 is_staff = Annotated[bool, mapped_column(default=False)]
 
@@ -41,6 +41,11 @@ class Product(db.Model):
     price: Mapped[Decimal] = mapped_column(nullable=False)
     category_id: Mapped[not_nullable_int]
     created_at: Mapped[created_at]
+
+    in_basket: Mapped[list["User"]] = relationship(
+        back_populates="basket_products",
+        secondary="basket"
+    )
 
     repr_cols = ("description", "price", "category_id")
 
@@ -57,6 +62,7 @@ class Country(enum.Enum):
     Russia = "Россия"
     Belarus = "Беларусь"
     Kazakhstan = "Казахстан"
+    Not_specified = "Не указано"
 
 
 class User(db.Model):
@@ -68,7 +74,7 @@ class User(db.Model):
     phone: Mapped[str] = mapped_column(unique=True, nullable=False)
     address: Mapped[nullable_str]
     additional_address: Mapped[nullable_str]
-    country: Mapped["Country"] = mapped_column(nullable=True, default="")
+    country: Mapped["Country"] = mapped_column(nullable=True, default=Country.Not_specified)
 
     password: Mapped[not_nullable_str]
 
@@ -76,6 +82,17 @@ class User(db.Model):
     register_at: Mapped[created_at]
 
     is_staff: Mapped[is_staff]
-    is_superuser: Mapped[is_staff]
+    is_superuser: Mapped[bool] = mapped_column(default=True)
+
+    basket_products: Mapped[list["Product"]] = relationship(
+        back_populates="in_basket",
+        secondary="basket"
+    )
 
     repr_cols = ("password", "register_at", "user_image", "phone", "name", "surname", "address")
+
+
+class Basket(db.Model):
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id", ondelete="CASCADE"), primary_key=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("product.product_id", ondelete="CASCADE"), primary_key=True)
+

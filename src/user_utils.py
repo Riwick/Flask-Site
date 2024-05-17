@@ -21,6 +21,9 @@ class UserLogin(UserMixin):
         self.__user = user
         return self
 
+    def is_superuser_or_is_staff(self):
+        return self.__user.is_superuser or self.__user.is_staff
+
     def get_id(self):
         return str(self.__user.user_id)
 

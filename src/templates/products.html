@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+
   <div class="container py-5">
     <h1 class="text-body-emphasis" style="text-align: center">Это страница каталога</h1>
     <p class="col-lg-8 mx-auto lead">
@@ -14,7 +15,9 @@
 {% if not products %}
   <h1 class="text-body-emphasis" style="text-align: center">Тут пока ничего нет...</h1>
 {% else %}
-
+<div style="margin-bottom: 50px;">
+  {{ pagination.links }}
+</div>
   {% for cat, msg in get_flashed_messages(with_categories=True) %}
     {% if cat == "success" %}
       <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
@@ -42,7 +45,7 @@
                   <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.title }}</a>
                   <p class="card-text" >{{ product.short_description }}</p>
                   <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
-                  {% if current_user.is_staff or current_user.is_superuser %}
+                  {% if current_user.is_superuser_or_is_staff() %}
                     <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить</a>
                   {% endif %}
                   <a href="#" class="btn btn-success shadow-sm" style="margin-top: 10px;">Добавить в корзину</a>
@@ -106,23 +109,7 @@
 <!--      </ul>-->
 <!--    </div>-->
 <!--  </div>-->
-  <div class="container" style="align-items: center; margin-top: 50px; justify-content: center; display: flex;">
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
+<div style="margin-top: 50px;">
+  {{ pagination.links }}
   </div>
 {% endblock %}

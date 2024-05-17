@@ -1,7 +1,9 @@
 from flask import render_template, Blueprint, session, abort, request, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
+from sqlalchemy import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from src.database import Basket
 from src.routes.queries.user_queries import UserQueries
 from src.user_utils import UserLogin, validate_user_register
 
@@ -63,3 +65,17 @@ def profile():
 def logout():
     logout_user()
     return redirect("/")
+
+
+@user_router.route("/basket")
+@login_required
+def get_basket():
+    basket = UserQueries.get_basket_query(current_user.get_id())
+    return render_template("basket.html", basket=basket)
+
+
+@user_router.route("/basket/<int:product_id>/delete")
+@login_required
+def delete_product_from_basket():
+    try:
+        detail, result = UserQueries

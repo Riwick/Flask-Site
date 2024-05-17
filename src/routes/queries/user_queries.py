@@ -1,7 +1,8 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import insert, select
+from sqlalchemy.orm import selectinload
 
-from src.database import db, User
+from src.database import db, User, Basket
 
 
 class UserQueries:
@@ -40,3 +41,12 @@ class UserQueries:
         except Exception as e:
             print(e)
             return None, False
+
+    @staticmethod
+    def get_basket_query(user_id):
+        query = (
+            select(User).filter(User.user_id == user_id).options(selectinload(User.basket_products))
+        )
+        basket = db.session.execute(query).scalars().one_or_none()
+        return basket
+
