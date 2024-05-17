@@ -1,10 +1,9 @@
 from flask import render_template, Blueprint, session, abort, request, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
-from sqlalchemy import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from src.database import Basket
 from src.routes.queries.user_queries import UserQueries
+from src.routes.utils import get_total_basket_sum
 from src.user_utils import UserLogin, validate_user_register
 
 user_router = Blueprint("route", __name__)
@@ -56,7 +55,16 @@ def register():
 @login_required
 def profile():
     if request.method == "POST":
-        pass
+        detail, status = UserQueries.update_profile_query(request.files.get("image"),  request.form.get("name"),
+                                                          request.form.get("surname"), request.form.get("username"),
+                                                          request.form.get("address"),
+                                                          request.form.get("additional_address"),
+                                                          request.form.get("country"), current_user.get_id())
+        if status:
+            flash(detail, category="success")
+        else:
+            flash(detail, category="error")
+
     return render_template("profile.html", title=f"Профиль {current_user.get_username()}")
 
 
@@ -64,18 +72,36 @@ def profile():
 @login_required
 def logout():
     logout_user()
-    return redirect("/")
+    return redirect("/login")
 
 
-@user_router.route("/basket")
+@user_router.route("/basket", methods=["GET"])
 @login_required
 def get_basket():
-    basket = UserQueries.get_basket_query(current_user.get_id())
-    return render_template("basket.html", basket=basket)
+    basket = UserQueries.get_basket_products_query(current_user.get_id())
+    total_price = get_total_basket_sum(basket)
+    return render_template("basket.html", basket=basket, total_price=total_price)
 
 
-@user_router.route("/basket/<int:product_id>/delete")
+@user_router.route("/basket/<int:user_id>/<int:product_id>/delete", methods=["POST", "DELETE", "GET"])
 @login_required
-def delete_product_from_basket():
-    try:
-        detail, result = UserQueries
+def delete_product_from_basket(user_id: int, product_id: int):
+    detail, result = UserQueries.delete_product_from_basket_query(user_id, product_id)
+    if result:
+        flash(detail, category="success")
+    else:
+        flash(detail, category="error")
+
+    return redirect("/basket")
+
+
+@user_router.route("/product/<int:product_id>/<int:user_id>/add_to_basket")
+@login_required
+def add_product_to_basket(product_id: int, user_id: int):
+    detail, result = UserQueries.add_product_to_basket_query(product_id, user_id)
+    if result:
+        flash(detail, category="success")
+    else:
+        flash(detail, category="error")
+
+    return redirect("/products")

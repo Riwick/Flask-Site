@@ -21,8 +21,10 @@
               <li><a href="/products" class="nav-link px-2 text-white">Каталог</a></li>
               <li><a href="/contacts" class="nav-link px-2 text-white">Обратная связь</a></li>
               <li><a href="/about" class="nav-link px-2 text-white">Про нас</a></li>
-              {% if current_user.is_superuser_or_is_staff() %}
-                <li><a href="/add_product" class="nav-link px-2 text-white">Добавить продукт</a></li>
+              {% if current_user.is_authenticated %}
+                {% if current_user.is_superuser_or_is_staff() %}
+                  <li><a href="/add_product" class="nav-link px-2 text-white">Добавить продукт</a></li>
+                {% endif %}
               {% endif %}
           </ul>
 
@@ -59,8 +61,10 @@
             <li class="nav-item"><a href="/products" class="nav-link px-2 text-body-secondary">Каталог</a></li>
             <li class="nav-item"><a href="/contacts" class="nav-link px-2 text-body-secondary">Обратная связь</a></li>
             <li class="nav-item"><a href="/about" class="nav-link px-2 text-body-secondary">Про нас</a></li>
-            {% if current_user.is_superuser_or_is_staff() %}
-                <li class="nav-item"><a href="/add_product" class="nav-link px-2 text-body-secondary">Добавить продукт</a></li>
+            {% if current_user.is_authenticated %}
+                {% if current_user.is_superuser_or_is_staff() %}
+                    <li class="nav-item"><a href="/add_product" class="nav-link px-2 text-body-secondary">Добавить продукт</a></li>
+                {% endif %}
             {% endif %}
         </ul>
         <p class="text-center text-body-secondary">© 2024 Company, Inc</p>

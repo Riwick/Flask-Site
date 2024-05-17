@@ -18,6 +18,7 @@
 <div style="margin-bottom: 50px;">
   {{ pagination.links }}
 </div>
+  <div class="container">
   {% for cat, msg in get_flashed_messages(with_categories=True) %}
     {% if cat == "success" %}
       <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
@@ -33,7 +34,7 @@
       </div>
     {% endif %}
   {% endfor %}
-
+  </div>
   {% for product in products %}
     <div style="margin-top: 30px; padding: 0;">
         <div class="container">
@@ -42,13 +43,22 @@
               <div class="card shadow-sm">
                 <a href="/products/{{ product.product_id }}"><img src="{{ url_for('uploaded_product_file', filename=product.image) }}" height="300px;" width="98%;" style="margin: 1%;  border-radius: 5px;"></a>
                 <div class="card-body">
-                  <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.title }}</a>
+                  <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.product_id }}</a>
                   <p class="card-text" >{{ product.short_description }}</p>
                   <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
-                  {% if current_user.is_superuser_or_is_staff() %}
-                    <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить</a>
+                  {% if current_user.is_authenticated %}
+                    {% if current_user.is_superuser_or_is_staff() %}
+                      <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить</a>
+                    {% endif %}
                   {% endif %}
-                  <a href="#" class="btn btn-success shadow-sm" style="margin-top: 10px;">Добавить в корзину</a>
+
+                  {% if current_user.is_authenticated %}
+                    {% for basket in baskets if product.product_id == basket.product_id %}
+                      <a href="/basket" class="btn btn-secondary shadow-sm" style="margin-top: 10px;" >Перейти в корзину</a>
+                    {% else %}
+                      <a href="/product/{{ product.product_id }}/{{ current_user.get_id() }}/add_to_basket" class="btn btn-success shadow-sm" style="margin-top: 10px;">Добавить в корзину</a>
+                    {% endfor %}
+                  {% endif %}
                 </div>
               </div>
             </div>

@@ -6,9 +6,9 @@
 
 {% block content %}
     <div class="py-5 text-center">
-      <h2>Профиль пользователя {{ current_user.get_username() }}</h2>
-<!--      <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>-->
+      <h1>Профиль пользователя <span style="color: #ffc107;">{{ current_user.get_username() }}</span></h1>
     </div>
+<div class="container">
   {% for cat, msg in get_flashed_messages(with_categories=True) %}
       {% if cat == "success" %}
       <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
@@ -24,20 +24,21 @@
       </div>
       {% endif %}
   {% endfor %}
+</div>
     <div class="container">
         <div class="image-container">
             <img src="{{ url_for('uploaded_user_file', filename=current_user.get_image()) }}" class="profile-image">
         </div>
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
              <div class="row g-3">
                 <div class="col-sm-6">
                   <label class="form-label">Фотография</label>
-                  <input type="file" class="form-control" name="image" placeholder="{{ current_user.get_image() }}" value="{{ current_user.get_image() }}">
+                  <input type="file" class="form-control" name="image" placeholder="{{ current_user.get_image() }}">
                 </div>
 
                 <div class="col-sm-6">
                   <label for="PhoneNumber" class="form-label">Номер телефона</label>
-                  <input type="text" class="form-control" name="phone" id="PhoneNumber" value="{{ current_user.get_phone_number() }}">
+                  <input type="text" class="form-control" name="phone" id="PhoneNumber" value="{{ current_user.get_phone_number() }}" readonly>
                 </div>
 
                 <div class="col-sm-6">
@@ -77,14 +78,17 @@
                   <label for="country" class="form-label">Страна</label>
                     <input type="text" class="form-control" value="{{ current_user.get_country() }}" style="margin-bottom: 5px;" readonly>
                   <select class="form-select" id="country" name="country">
-                    <option value="">Выбор...</option>
-                      <option>Россия</option>
-                      <option>Беларусь</option>
-                      <option>Казахстан</option>
+                    <option value="{{ current_user.get_country() }}">Выбор...</option>
+                      <option>Russia</option>
+                      <option>Belarus</option>
+                      <option>Kazakhstan</option>
                   </select>
                 </div>
 
               </div>
+            <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                <input type="submit" class="btn btn-success" value="Подтвердить" style="height: 50px; font-size: 20px;">
+            </div>
         </form>
     </div>
 {% endblock %}

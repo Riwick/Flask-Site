@@ -1,10 +1,10 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from flask_login import UserMixin
 
 from src.database import User
 
 
-USER_UPLOAD_FOLDER = "src/static/images/service_images/"
+USER_UPLOAD_FOLDER = "src/static/images/user_images/"
 
 
 class UserLogin(UserMixin):
@@ -52,7 +52,7 @@ class UserLogin(UserMixin):
         return str(self.__user.additional_address)
 
     def get_country(self):
-        return str(self.__user.country)
+        return str(self.__user.country).rsplit(".", 1)[1]
 
 
 def validate_user_register(username, password, password_confirm, email, phone):
@@ -64,3 +64,21 @@ def validate_user_register(username, password, password_confirm, email, phone):
 
     else:
         return "Для регистрации необходимо заполнить все поля", False
+
+
+def update_profile_image_stmt(image, name, surname, username, address, additional_address, country, user_id):
+    stmt = (
+        update(User).filter(User.user_id == user_id)
+        .values(user_image=image.filename, name=name, surname=surname, username=username,
+                address=address, additional_address=additional_address, country=country)
+    )
+    return stmt
+
+
+def update_profile_without_image_stmt(name, surname, username, address, additional_address, country, user_id):
+    stmt = (
+        update(User).filter(User.user_id == user_id)
+        .values(name=name, surname=surname, username=username, address=address,
+                additional_address=additional_address, country=country)
+    )
+    return stmt
