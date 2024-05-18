@@ -2,6 +2,7 @@ import os.path
 
 from flask import Flask, render_template, send_from_directory
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 from src.admin.main import admin_router
 from src.users.main import user_router
@@ -13,7 +14,7 @@ from src.database import db
 from src.config import SECRET_KEY, DB_NAME, DB_PORT, DB_HOST, DB_PASS, DB_USER
 from src.products.utils import PRODUCTS_UPLOAD_FOLDER
 
-app = Flask("Riwi_Site", template_folder="src/templates/")
+app = Flask(__name__, template_folder="src/templates/")
 
 
 if not os.path.exists("src/products/static/images/products_images/"):  # создание папки для изображений продуктов
@@ -39,10 +40,7 @@ login_manager.login_message_category = "success"
 
 
 db.init_app(app)
-
-with app.app_context():
-    db.create_all()
-
+migrate = Migrate(app, db)
 
 app.register_blueprint(user_router, url_prefix="/users")
 app.register_blueprint(main_router)

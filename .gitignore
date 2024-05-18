@@ -4,3 +4,4 @@ __pycache__/
 .env
 products_images/
 users_images/
+migrations/versions/
