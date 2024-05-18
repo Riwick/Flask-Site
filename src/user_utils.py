@@ -55,17 +55,6 @@ class UserLogin(UserMixin):
         return str(self.__user.country).rsplit(".", 1)[1]
 
 
-def validate_user_register(username, password, password_confirm, email, phone):
-    if password != password_confirm:
-        return "Пароли не совпадают", False
-
-    if username and phone and password and password == password_confirm and email:
-        return "", True
-
-    else:
-        return "Для регистрации необходимо заполнить все поля", False
-
-
 def update_profile_image_stmt(image, name, surname, username, address, additional_address, country, user_id):
     stmt = (
         update(User).filter(User.user_id == user_id)

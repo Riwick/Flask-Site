@@ -6,7 +6,9 @@ from src.routes.queries.products_queries import ProductQueries
 from src.routes.queries.user_queries import UserQueries
 from src.routes.utils import get_pagination, get_paginated_products
 
+
 products_router = Blueprint("products_router", __name__)
+
 
 PER_PAGE = 10
 

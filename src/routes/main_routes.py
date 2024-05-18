@@ -2,9 +2,10 @@ from flask import Blueprint, render_template, request, flash, make_response, ses
 from flask_login import login_required
 
 from src.routes.queries.main_queries import MainQueries
+from src.forms import FeedBackForm
 
 
-main_router = Blueprint("main_routes", __name__)
+main_router = Blueprint("main_router", __name__)
 
 
 @main_router.route("/")
@@ -24,15 +25,16 @@ def about():
 @main_router.route("/contacts", methods=["GET", "POST"])
 @login_required
 def contacts():
-    if request.method == "POST":
-        detail, status = MainQueries.add_feedback_query(request.form["username"], request.form["email"],
-                                                        request.form["phone-number"], request.form["message"])
+    form = FeedBackForm()
+    if form.validate_on_submit():
+        detail, status = MainQueries.add_feedback_query(form.username.data, form.email.data,
+                                                        form.phone.data, form.message.data)
         if status:
             flash(detail, category="success")
         else:
             flash(detail, category="error")
 
-    return render_template("contacts.html", title="Обратная связь")
+    return render_template("contacts.html", title="Обратная связь", form=form)
 
 
 @main_router.route("/test-route/")

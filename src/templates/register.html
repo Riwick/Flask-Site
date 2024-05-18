@@ -23,24 +23,25 @@
     {% endfor %}
     <form method="post">
         <h1 class="h1 text-center">Регистрация</h1>
+        {{ form.hidden_tag() }}
         <div class="mb-3">
-            <input type="text" class="form-control" name="username" placeholder="Имя пользователя" required>
+            {{ form.username(class="form-control", placeholder="Имя пользователя", type="text") }}
         </div>
         <div class="mb-3">
-            <input type="email" class="form-control" name="email" placeholder="Email" required>
+            {{ form.email(class="form-control", placeholder="Email", type="email") }}
         </div>
         <div class="mb-3">
-            <input type="tel" class="form-control" name="phone" placeholder="+1-234-56-78" required>
+            {{ form.phone(class="form-control", placeholder="+1-234-56-78", type="tel") }}
         </div>
         <div style="display: flex; justify-content: space-around;">
             <div style="margin-right: 10px;">
-                <input type="password" class="form-control" name="password" placeholder="Пароль" required>
+                {{ form.password(class="form-control", placeholder="Пароль", type="password") }}
             </div>
             <div class="mb-3" style="margin-left: 10px;">
-                <input type="password" class="form-control" name="password-confirm" placeholder="Повторите пароль" required>
+                {{ form.password_confirm(class="form-control", placeholder="Повторите пароль", type="password") }}
             </div>
         </div>
-        <input class="btn btn-warning w-100 py-2" type="submit" value="Зарегистрироваться" style="margin-bottom: 20px;">
+        {{ form.submit(class="btn btn-warning w-100 py-2", value="Зарегистрироваться", type="submit", style="margin-bottom: 20px;") }}
         <button class="w-100 py-2 mb-2 btn btn-outline-secondary rounded-3" type="submit">
             Войти с помощью GitHub
         </button>
