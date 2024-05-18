@@ -1,19 +1,18 @@
 from flask import Blueprint, render_template, abort, request, redirect, flash
 from flask_login import current_user
-from flask_paginate import Pagination, get_page_parameter
+from flask_paginate import get_page_parameter
 
-from src.routes.queries.products_queries import ProductQueries
-from src.routes.queries.user_queries import UserQueries
-from src.routes.utils import get_pagination, get_paginated_products
+from src.products.products_queries import ProductQueries
+from src.users.users_queries import UserQueries
+from src.products.utils import get_pagination, get_paginated_products
 
-
-products_router = Blueprint("products_router", __name__)
+products_router = Blueprint("products_router", __name__, template_folder="templates", static_folder="static")
 
 
 PER_PAGE = 10
 
 
-@products_router.route("/products/", methods=["GET"])
+@products_router.route("/", methods=["GET"])
 def get_all_products():
 
     products = ProductQueries.get_all_products_query()
@@ -22,18 +21,18 @@ def get_all_products():
     page = request.args.get(get_page_parameter(), type=int, default=1)
     paginated_products = get_paginated_products(page=page, products=products, per_page=PER_PAGE)
 
-    return render_template("products.html",
+    return render_template("products/products.html",
                            products=paginated_products,
                            title="Каталог", pagination=get_pagination(page=page, per_page=PER_PAGE, total=products),
                            baskets=baskets)
 
 
-@products_router.route("/products/<int:product_id>/", methods=["GET"])
+@products_router.route("/<int:product_id>/", methods=["GET"])
 def get_one_product(product_id: int):
     product = ProductQueries.get_one_product_query(product_id)
     if not product:
         abort(404)
-    return render_template("products-detail.html", product=product, title=product.title)
+    return render_template("products/products-detail.html", product=product, title=product.title)
 
 
 @products_router.route("/add_product/", methods=["GET", "POST"])
@@ -46,10 +45,10 @@ def add_product():
             flash("Продукт добавлен", category="success")
         else:
             flash(detail, category="error")
-    return render_template("add_product.html", title="Добавление продукта")
+    return render_template("products/add_product.html", title="Добавление продукта")
 
 
-@products_router.route('/products/<int:product_id>/delete_product/', methods=["DELETE", "POST", "GET"])
+@products_router.route("/<int:product_id>/delete_product/", methods=["DELETE", "POST", "GET"])
 def delete_product(product_id: int):
     detail, status = ProductQueries.delete_product_query(product_id)
     if status:

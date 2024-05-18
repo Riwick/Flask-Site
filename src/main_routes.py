@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, flash, make_response, session
+from flask import Blueprint, render_template, flash, make_response, session
 from flask_login import login_required
 
-from src.routes.queries.main_queries import MainQueries
+from src.main_queries import MainQueries
 from src.forms import FeedBackForm
 
 

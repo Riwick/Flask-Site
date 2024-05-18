@@ -82,7 +82,7 @@ class User(db.Model):
     register_at: Mapped[created_at]
 
     is_staff: Mapped[is_staff]
-    is_superuser: Mapped[bool] = mapped_column(default=True)
+    is_superuser: Mapped[is_staff]
 
     basket_products: Mapped[list["Product"]] = relationship(
         back_populates="in_basket",

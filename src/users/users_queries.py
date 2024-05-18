@@ -1,13 +1,13 @@
 import os
-from copy import copy, deepcopy
+from copy import deepcopy
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import insert, select, delete, and_, update
+from sqlalchemy import insert, select, delete, and_
 from sqlalchemy.orm import selectinload
 
 from src.database import db, User, Basket
-from src.routes.utils import allowed_file
-from src.user_utils import USER_UPLOAD_FOLDER, update_profile_image_stmt, update_profile_without_image_stmt
+from src.utils import allowed_file
+from src.users.users_utils import USER_UPLOAD_FOLDER, update_profile_image_stmt, update_profile_without_image_stmt
 
 
 class UserQueries:

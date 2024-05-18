@@ -1,12 +1,5 @@
 from flask_paginate import Pagination
 
-PRODUCTS_UPLOAD_FOLDER = "src/static/images/products_images/"
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-
-
-def allowed_file(filename: str):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 def get_pagination(total: list, page, per_page):
     pagination = Pagination(page=page, total=len(total),
@@ -28,8 +21,4 @@ def get_paginated_products(products, page, per_page):
     return paginated_products
 
 
-def get_total_basket_sum(basket):
-    total_price = 0
-    for product in basket.basket_products:
-        total_price += product.price
-    return total_price
+PRODUCTS_UPLOAD_FOLDER = "src/products/static/images/products_images/"

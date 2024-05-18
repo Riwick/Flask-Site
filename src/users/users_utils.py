@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from src.database import User
 
 
-USER_UPLOAD_FOLDER = "src/static/images/user_images/"
+USER_UPLOAD_FOLDER = "src/users/static/images/users_images/"
 
 
 class UserLogin(UserMixin):
@@ -71,3 +71,10 @@ def update_profile_without_image_stmt(name, surname, username, address, addition
                 additional_address=additional_address, country=country)
     )
     return stmt
+
+
+def get_total_basket_sum(basket):
+    total_price = 0
+    for product in basket.basket_products:
+        total_price += product.price
+    return total_price

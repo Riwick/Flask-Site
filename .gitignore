@@ -1,6 +1,6 @@
 .idea
 .venv
 __pycache__/
-src/.env
+.env
 products_images/
-user_images/
+users_images/

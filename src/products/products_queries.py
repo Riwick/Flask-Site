@@ -1,11 +1,11 @@
 import os.path
 from decimal import Decimal
 
-from flask_sqlalchemy import pagination
 from sqlalchemy import select, insert, delete
 
 from src.database import Product, db
-from src.routes.utils import allowed_file, PRODUCTS_UPLOAD_FOLDER
+from src.utils import allowed_file
+from src.products.utils import PRODUCTS_UPLOAD_FOLDER
 
 
 class ProductQueries:

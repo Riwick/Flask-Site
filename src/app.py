@@ -3,23 +3,24 @@ import os.path
 from flask import Flask, render_template, send_from_directory
 from flask_login import LoginManager
 
-from src.routes.user_routes import user_router
-from src.routes.main_routes import main_router
-from src.routes.products_routes import products_router
-from src.user_utils import UserLogin, USER_UPLOAD_FOLDER
+from src.admin.main import admin_router
+from src.users.main import user_router
+from src.main_routes import main_router
+from src.products.main import products_router
+from src.users.users_utils import UserLogin, USER_UPLOAD_FOLDER
 
 from src.database import db
 from src.config import SECRET_KEY, DB_NAME, DB_PORT, DB_HOST, DB_PASS, DB_USER
-from src.routes.utils import PRODUCTS_UPLOAD_FOLDER
+from src.products.utils import PRODUCTS_UPLOAD_FOLDER
 
 app = Flask("Riwi_Site", template_folder="src/templates/")
 
 
-if not os.path.exists("src/static/images/products_images/"):  # создание папки для изображений продуктов
-    os.mkdir("src/static/images/products_images/")
+if not os.path.exists("src/products/static/images/products_images/"):  # создание папки для изображений продуктов
+    os.mkdir("src/users/static/images/users_images/")
 
-if not os.path.exists("src/static/images/user_images/"):  # создание папки для изображений пользователей
-    os.mkdir("src/static/images/user_images/")
+if not os.path.exists("src/users/static/images/users_images/"):  # создание папки для изображений пользователей
+    os.mkdir("src/users/static/images/users_images/")
 
 
 app.static_folder = "src/static"
@@ -43,9 +44,10 @@ with app.app_context():
     db.create_all()
 
 
-app.register_blueprint(user_router)
+app.register_blueprint(user_router, url_prefix="/users")
 app.register_blueprint(main_router)
-app.register_blueprint(products_router)
+app.register_blueprint(products_router, url_prefix="/products")
+app.register_blueprint(admin_router, url_prefix="/admin")
 
 
 @app.errorhandler(404)
