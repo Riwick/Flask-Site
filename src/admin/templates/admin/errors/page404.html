@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="px-4 py-5 my-5 text-center" style="height: 600px;">
+        <h1 class="display-5 fw-bold text-body-emphasis">Страница не найдена</h1>
+        <div class="col-lg-6 mx-auto">
+          <p class="lead mb-4">Проверьте корректность URL-адреса или вернитесь на <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="/">Главную страницу</a></p>
+        </div>
+        <div class="">
+        <img src="/static/images/service_images/page_not_found.jpg" width="500" height="500">
+      </div>
+    </div>
+{% endblock %}
