@@ -33,7 +33,6 @@ class ProductQueries:
         except Exception as e:
             print(e)
 
-
     @staticmethod
     def delete_product_query(product_id):
         try:
