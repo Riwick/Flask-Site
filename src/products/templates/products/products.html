@@ -5,121 +5,122 @@
 {% endblock %}
 
 {% block content %}
-
-  <div class="container py-5">
-    <h1 class="text-body-emphasis" style="text-align: center">Это страница каталога</h1>
-    <p class="col-lg-8 mx-auto lead">
-      Здесь вы можете посмотреть товары и даже попробовать заказать их, однако у вас ничего не получиться, так как у нас нет системы оплаты
-    </p>
-  </div>
-{% if not products %}
-  <h1 class="text-body-emphasis" style="text-align: center">Тут пока ничего нет...</h1>
-{% else %}
-<div style="margin-bottom: 50px;">
-  {{ pagination.links }}
-</div>
-  <div class="container">
-  {% for cat, msg in get_flashed_messages(with_categories=True) %}
-    {% if cat == "success" %}
-      <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
-        <div>
-          {{ msg }}
-        </div>
-      </div>
+<div style="display: flex;">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px; height: 600px; position: sticky; top: 100px; bottom: 100px;">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4">Категории</span>
+      </a>
+      <hr>
+      {% if categories %}
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="/products/" class="btn btn-warning" style="margin-bottom: 10px; width: 100%;">
+              Все товары
+            </a>
+          </li>
+        {% for category in categories %}
+          <li class="nav-item">
+            <a href="/products/?category={{ category.title }}" class="btn btn-warning" style="margin-bottom: 10px; width: 100%;">
+              {{ category.title }}
+            </a>
+          </li>
+        {% endfor %}
       {% else %}
-      <div class="alert alert-warning d-flex align-items-center shadow rounded" role="alert" style="height: 50px;">
-        <div>
-          {{ msg }}
-        </div>
-      </div>
-    {% endif %}
-  {% endfor %}
-  </div>
-  {% for product in products %}
-    <div style="margin-top: 30px; padding: 0;">
-        <div class="container">
-          <div class="row-custom">
-            <div class="col">
-              <div class="card shadow-sm">
-                <a href="/products/{{ product.product_id }}"><img src="{{ url_for('uploaded_product_file', filename=product.image) }}" height="300px;" width="98%;" style="margin: 1%;  border-radius: 5px;"></a>
-                <div class="card-body">
-                  <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.product_id }}</a>
-                  <p class="card-text" >{{ product.short_description }}</p>
-                  <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
-                  {% if current_user.is_authenticated %}
-                    {% if current_user.is_superuser_or_is_staff() %}
-                      <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить</a>
-                    {% endif %}
-                  {% endif %}
+        <h4 class="btn btn-warning" style="cursor: default;">Тут пока ничего нет</h4>
+      {% endif %}
 
-                  {% if current_user.is_authenticated %}
-                    {% for basket in baskets if product.product_id == basket.product_id %}
-                      <a href="/basket" class="btn btn-secondary shadow-sm" style="margin-top: 10px;" >Перейти в корзину</a>
-                    {% else %}
-                      <a href="/product/{{ product.product_id }}/{{ current_user.get_id() }}/add_to_basket" class="btn btn-success shadow-sm" style="margin-top: 10px;">Добавить в корзину</a>
-                    {% endfor %}
-                  {% endif %}
+      </ul>
+      <hr>
+      {% if current_user.is_authenticated %}
+      <div class="flex-shrink-0 dropdown">
+        <button class="d-block link-body-emphasis text-decoration-none dropbtn" data-bs-toggle="dropdown" aria-expanded="true" style="margin-left: 80%;">
+          <img  src="{{ url_for('uploaded_user_file', filename=current_user.get_image()) }}" width="32" height="32" class="rounded-circle" loading="lazy">
+        </button>
+        <ul class="dropdown-content text-small shadow show" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 34px);" data-popper-placement="bottom-end">
+          <li><a class="dropdown-item" href="/users/profile">Профиль</a></li>
+          <li><a class="dropdown-item" href="/users/basket">Корзина</a></li>
+          <li><hr class="dropdown-divider"></li>
+          {% if current_user.is_authenticated %}
+            {% if current_user.is_superuser_or_is_staff() %}
+              <li><a href="/admin" class="dropdown-item">Админ панель</a></li>
+            {% endif %}
+          {% endif %}
+          <li><a class="dropdown-item" href="/users/logout">Выйти</a></li>
+        </ul>
+      </div>
+      {% else%}
+        <a type="button" class="btn btn-outline-light me-2" href="/users/login">Войти</a>
+        <a href="/users/register" type="button" class="btn btn-warning">Регистрация</a>
+      {% endif %}
+    </div>
+
+  <div style="display: block; margin: auto">
+    <div class="container py-5" style="max-width: 700px;">
+      <h1 class="text-body-emphasis" style="text-align: center">Это страница каталога</h1>
+      <p class="col-lg-8 mx-auto lead">
+        Здесь вы можете посмотреть товары и даже попробовать заказать их, однако у вас ничего не получиться, так как у нас нет системы оплаты
+      </p>
+    </div>
+  {% if not products %}
+    <h1 class="text-body-emphasis" style="text-align: center">Тут пока ничего нет...</h1>
+  {% else %}
+  <div style="margin-bottom: 50px;">
+    {{ pagination.links }}
+  </div>
+    <div class="container">
+    {% for cat, msg in get_flashed_messages(with_categories=True) %}
+      {% if cat == "success" %}
+        <div class="alert alert-success d-flex align-items-center shadow  rounded" role="alert" style="height: 50px;">
+          <div>
+            {{ msg }}
+          </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning d-flex align-items-center shadow rounded" role="alert" style="height: 50px;">
+          <div>
+            {{ msg }}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+    </div>
+    {% for product in products %}
+      <div style="margin-top: 30px; padding: 0;">
+          <div class="container">
+            <div class="row-custom">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <a href="/products/{{ product.product_id }}"><img src="{{ url_for('uploaded_product_file', filename=product.image) }}" height="300px;" width="98%;" style="margin: 1%;  border-radius: 5px;"></a>
+                  <div class="card-body">
+                    <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.product_id }}</a>
+                    <p class="card-text" >{{ product.short_description }}</p>
+                    <h5 class="card-text text-warning">Категория: {{ product.category_title }}</h5>
+                    <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
+                    {% if current_user.is_authenticated %}
+                      {% if current_user.is_superuser_or_is_staff() %}
+                        <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить</a>
+                      {% endif %}
+                    {% endif %}
+
+                    {% if current_user.is_authenticated %}
+                      {% for basket in baskets if product.product_id == basket.product_id %}
+                        <a href="/basket" class="btn btn-secondary shadow-sm" style="margin-top: 10px;" >Перейти в корзину</a>
+                      {% else %}
+                        <a href="/users/{{ product.product_id }}/{{ current_user.get_id() }}/add_to_basket" class="btn btn-success shadow-sm" style="margin-top: 10px;">Добавить в корзину</a>
+                      {% endfor %}
+                    {% endif %}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-    </div>
+      </div>
 
-  {% endfor %}
-{% endif %}
-<!--<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">-->
-<!--    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">-->
-<!--    </a>-->
-<!--    <hr>-->
-<!--    <ul class="nav nav-pills flex-column mb-auto">-->
-<!--      <li class="nav-item">-->
-<!--        <a href="#" class="nav-link active" aria-current="page">-->
-<!--          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>-->
-<!--          Home-->
-<!--        </a>-->
-<!--      </li>-->
-<!--      <li>-->
-<!--        <a href="#" class="nav-link text-white">-->
-<!--          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>-->
-<!--          Dashboard-->
-<!--        </a>-->
-<!--      </li>-->
-<!--      <li>-->
-<!--        <a href="#" class="nav-link text-white">-->
-<!--          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>-->
-<!--          Orders-->
-<!--        </a>-->
-<!--      </li>-->
-<!--      <li>-->
-<!--        <a href="#" class="nav-link text-white">-->
-<!--          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>-->
-<!--          Products-->
-<!--        </a>-->
-<!--      </li>-->
-<!--      <li>-->
-<!--        <a href="#" class="nav-link text-white">-->
-<!--          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>-->
-<!--          Customers-->
-<!--        </a>-->
-<!--      </li>-->
-<!--    </ul>-->
-<!--    <hr>-->
-<!--    <div class="dropdown">-->
-<!--      <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">-->
-<!--        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">-->
-<!--        <strong>mdo</strong>-->
-<!--      </a>-->
-<!--      <ul class="dropdown-menu dropdown-menu-dark text-small shadow">-->
-<!--        <li><a class="dropdown-item" href="#">New project...</a></li>-->
-<!--        <li><a class="dropdown-item" href="#">Settings</a></li>-->
-<!--        <li><a class="dropdown-item" href="#">Profile</a></li>-->
-<!--        <li><hr class="dropdown-divider"></li>-->
-<!--        <li><a class="dropdown-item" href="#">Sign out</a></li>-->
-<!--      </ul>-->
-<!--    </div>-->
-<!--  </div>-->
-<div style="margin-top: 50px;">
-  {{ pagination.links }}
-  </div>
+    {% endfor %}
+  {% endif %}
+  <div style="margin-top: 50px;">
+    {{ pagination.links }}
+    </div>
+      </div>
+</div>
 {% endblock %}

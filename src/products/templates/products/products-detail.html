@@ -10,6 +10,7 @@
         <img class="shadow-sm" src="{{ url_for('uploaded_product_file', filename=product.image) }}" height="300px;" width="100%;" style="margin-bottom: 1%; margin-top: 1%; border-radius: 5px;">
         <p>{{ product.short_description }}</p>
         <p class="text-break">{{ product.description }}</p>
+        <h5 class="card-text text-warning">Категория: {{ product.category_title }}</h5>
         <p class="card" style="font-size: 26px; padding: 5px; text-align: center;">{{ product.price }} руб.</p>
         {% if current_user.is_superuser_or_is_staff() %}
             <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm">Удалить</a>

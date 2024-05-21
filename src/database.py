@@ -32,6 +32,12 @@ not_nullable_int = Annotated[int, mapped_column(nullable=False)]
 is_staff = Annotated[bool, mapped_column(default=False)]
 
 
+class Category(db.Model):
+    category_id: Mapped[integer_pk]
+    title: Mapped[str] = mapped_column(String(75), unique=True, nullable=False)
+    short_description: Mapped[nullable_str]
+
+
 class Product(db.Model):
     product_id: Mapped[integer_pk]
     title: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
@@ -39,7 +45,7 @@ class Product(db.Model):
     image: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     price: Mapped[Decimal] = mapped_column(nullable=False)
-    category_id: Mapped[not_nullable_int]
+    category_title: Mapped[str] = mapped_column(ForeignKey("category.title", ondelete="SET NULL"), nullable=True)
     created_at: Mapped[created_at]
 
     in_basket: Mapped[list["User"]] = relationship(

@@ -90,7 +90,7 @@ def delete_product_from_basket(user_id: int, product_id: int):
     return redirect("/basket")
 
 
-@user_router.route("/product/<int:product_id>/<int:user_id>/add_to_basket")
+@user_router.route("/<int:product_id>/<int:user_id>/add_to_basket")
 @login_required
 def add_product_to_basket(product_id: int, user_id: int):
     detail, result = UserQueries.add_product_to_basket_query(product_id, user_id)

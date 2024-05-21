@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 
 {% block title %}
     {{ title }}
@@ -49,11 +49,16 @@
               <input type="text" class="form-control" name="price" placeholder="0.00" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Категория</label>
-              <input type="number" class="form-control" name="cat_id" required placeholder="0">
+              <label for="category" class="form-label">Категория</label>
+                  <select class="form-select" id="category" name="cat_name">
+                    <option value="{{ current_user.get_country() }}">Выбор...</option>
+                      {% for category in categories %}
+                        <option>{{ category.title }}</option>
+                      {% endfor %}
+                  </select>
             </div>
             <input class="btn btn-success btn-md me-md-2" type="submit" value="Отправить">
-            <a class="btn btn-warning btn-md me-md-2" href="/products">В каталог</a>
+            <a class="btn btn-warning btn-md me-md-2" href="/admin/products">К продуктам</a>
         </form>
     </div>
 {% endblock %}

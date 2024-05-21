@@ -7,7 +7,7 @@
     <main class="container">
   <div class="d-flex align-items-center p-3 my-3 bg-purple rounded shadow-sm">
     <div>
-        <h1>Страница админ панели</h1>
+        <h1>Главная страница админ панели</h1>
         <small>Если вы не являетесь администратором, то, пожалуйста, выйдите из своего аккаунта и умрите</small>
     </div>
   </div>
@@ -21,6 +21,9 @@
       <h5 class="border-bottom">
         <a href="/admin/products/{{ product.product_id }}" class="text-success" style="text-decoration: none;">{{ product.title }}</a>
       </h5>
+      <p class="pb-3 mb-0 lh-sm">
+        Категория: {{ product.category_title }}
+      </p>
       <p class="pb-3 mb-0 small lh-sm border-bottom">
       {{ product.short_description[:50] }}
       </p>
@@ -31,26 +34,29 @@
     </div>
     {% endfor %}
     <small class="d-block text-end mt-3">
+      <a href="/admin/products/add-product" class="btn btn-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Добавить продукт</a>
       <a href="/admin/products" class="btn btn-warning link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Все продукты</a>
     </small>
   </div>
 
   <div class="my-3 p-3 bg-body rounded shadow-sm">
     <h6 class="border-bottom pb-2 mb-0">Перечень категорий (Последние 3)</h6>
+    {% for category in categories %}
     <div class="d-flex text-body-secondary pt-3">
       <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
       <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
         <div class="d-flex justify-content-between">
-          <strong class="text-gray-dark">Full Name</strong>
+          <strong class="text-gray-dark">
+            <a href="/admin/categories/{{ category.category_id }}" class="text-success" style="text-decoration: none;">{{ category.title }}</a>
+          </strong>
         </div>
-        <span class="d-block">@username</span>
+        <span class="d-block">{{ category.short_description }}</span>
       </div>
     </div>
-
-
-
+    {% endfor %}
     <small class="d-block text-end mt-3">
-      <a href="#" class="btn btn-warning link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Все Категории</a>
+      <a href="/admin/categories/add-category" class="btn btn-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Добавить категорию</a>
+      <a href="/admin/categories" class="btn btn-warning link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Все Категории</a>
     </small>
   </div>
 
@@ -78,10 +84,10 @@
   <div class="my-3 p-3 bg-body rounded shadow-sm">
   <h6 class="border-bottom pb-2 mb-0">Пользователи</h6>
     <div class="my-3 p-3 bg-body rounded shadow-sm">
-      <h6><a href="#" class="text-success">Персонал</a></h6>
+      <h6><a href="/admin/users/staff" class="text-success">Персонал</a></h6>
     </div>
     <div class="my-3 p-3 bg-body rounded shadow-sm">
-      <h6><a href="#" class="text-info">Все пользователи</a></h6>
+      <h6><a href="/admin/users/all" class="text-info">Все пользователи</a></h6>
     </div>
   </div>
 </main>

@@ -15,8 +15,15 @@ PER_PAGE = 10
 @products_router.route("/", methods=["GET"])
 def get_all_products():
 
-    products = ProductQueries.get_all_products_query()
+    category = request.args.get("category")
+
+    if category:
+        products = ProductQueries.get_products_by_category(category)
+    else:
+        products = ProductQueries.get_all_products_query()
+ 
     baskets = UserQueries.get_basket_query(current_user.get_id())
+    categories = ProductQueries.get_all_categories()
 
     page = request.args.get(get_page_parameter(), type=int, default=1)
     paginated_products = get_paginated_products(page=page, products=products, per_page=PER_PAGE)
@@ -24,7 +31,7 @@ def get_all_products():
     return render_template("products/products.html",
                            products=paginated_products,
                            title="Каталог", pagination=get_pagination(page=page, per_page=PER_PAGE, total=products),
-                           baskets=baskets)
+                           baskets=baskets, categories=categories)
 
 
 @products_router.route("/<int:product_id>/", methods=["GET"])
@@ -57,5 +64,3 @@ def delete_product(product_id: int):
         flash(detail, category="error")
 
     return redirect("/products")
-
-
