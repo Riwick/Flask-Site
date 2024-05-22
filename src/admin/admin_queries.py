@@ -66,28 +66,28 @@ class AdminProductsQueries:
                 return "Для создания продукта необходимо загрузить изображение", False
 
             if image and allowed_file(image.filename):
+
+                query = (
+                    select(Product)
+                )
+                products = db.session.execute(query).scalars().all()
+
+                for product in products:
+                    if product.title == title:
+                        return "Такой продукт уже существует", False
+
+                my_decimal = Decimal(str(price)).quantize(Decimal('0.01'))
+
+                stmt = (
+                    insert(Product).values(title=title, short_description=short_desc,
+                                           description=desc, price=my_decimal, category_title=cat_name,
+                                           image=image.filename)
+                )
+                db.session.execute(stmt)
+                db.session.commit()
+
                 image.save(os.path.join(PRODUCTS_UPLOAD_FOLDER, image.filename))
-
-            query = (
-                select(Product)
-            )
-            products = db.session.execute(query).scalars().all()
-
-            for product in products:
-                if product.title == title:
-                    return "Такой продукт уже существует", False
-
-            my_decimal = Decimal(str(price)).quantize(Decimal('0.01'))
-
-            stmt = (
-                insert(Product).values(title=title, short_description=short_desc,
-                                       description=desc, price=my_decimal, category_title=cat_name,
-                                       image=image.filename)
-            )
-            db.session.execute(stmt)
-            db.session.commit()
-
-            return "Продукт добавлен", True
+                return "Продукт добавлен", True
 
         except Exception as e:
             print(e)
@@ -160,12 +160,21 @@ class AdminFeedbacksQueries:
         return feedbacks
 
     @staticmethod
+    def get_one_feedback_by_id(feedback_id):
+        query = (
+            select(Feedback).filter(Feedback.feedback_id == feedback_id)
+        )
+        fb = db.session.execute(query).scalars().one_or_none()
+        return fb
+
+    @staticmethod
     def delete_feedback(feedback_id: int):
         try:
             query = (
                 select(Feedback).filter(Feedback.feedback_id == feedback_id)
             )
             fb = db.session.execute(query).scalars().one_or_none()
+
             if fb:
                 stmt = (
                     delete(Feedback).filter(Feedback.feedback_id == feedback_id)
@@ -234,13 +243,22 @@ class AdminCategoriesQueries:
         return categories
 
     @staticmethod
+    def get_one_category_by_id(category_id):
+        query = (
+            select(Category).filter(Category.category_id == category_id)
+        )
+        category = db.session.execute(query).scalars().one_or_none()
+        return category
+
+    @staticmethod
     def delete_category_by_id(category_id: int):
         try:
             query = (
                 select(Category).filter(Category.category_id == category_id)
             )
-            product = db.session.execute(query).scalars().one_or_none()
-            if product:
+            category = db.session.execute(query).scalars().one_or_none()
+
+            if category:
                 stmt = (
                     delete(Category).filter(Category.category_id == category_id)
                 )
@@ -275,3 +293,27 @@ class AdminCategoriesQueries:
         except Exception as e:
             print(e)
             return "Ошибка при добавлении категории", False
+
+    @staticmethod
+    def update_category(category_id, title, short_desc):
+        try:
+            query = (
+                select(Category).filter(Category.category_id == category_id)
+            )
+            category = db.session.execute(query).scalars().one_or_none()
+
+            if not category:
+                return "Такой категории не существует", False
+
+            stmt = (
+                update(Category).filter(Category.category_id == category_id).values(title=title,
+                                                                                    short_description=short_desc)
+            )
+            db.session.execute(stmt)
+            db.session.commit()
+
+            return "Категория обновлена", True
+
+        except Exception as e:
+            print(e)
+            return "Ошибка при обновлении категории", False

@@ -191,3 +191,23 @@ def add_category():
         return render_template("admin/categories/add_category.html", title="Добавление категории")
 
     return redirect("/")
+
+
+@admin_router.route("/categories/<int:category_id>", methods=["GET", "POST", "PUT"])
+@login_required
+def update_category(category_id: int):
+    if check_current_user():
+        if request.method == "POST" or request.method == "PUT":
+            detail, status = AdminCategoriesQueries.update_category(category_id, request.form["title"],
+                                                                    request.form["short_desc"])
+            if status:
+                flash(detail, category="success")
+            else:
+                flash(detail, category="error")
+
+        category = AdminCategoriesQueries.get_one_category_by_id(category_id)
+
+        return render_template("admin/categories/categories-detail.html", category=category,
+                               title="Обновление категории")
+
+    return redirect("/")
