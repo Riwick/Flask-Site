@@ -1,7 +1,8 @@
 import os
+from copy import deepcopy
 from decimal import Decimal
 
-from sqlalchemy import select, or_, delete, insert
+from sqlalchemy import select, or_, delete, insert, update
 
 from src.database import Product, Feedback, db, User, Category
 from src.products.utils import PRODUCTS_UPLOAD_FOLDER
@@ -28,6 +29,14 @@ class AdminProductsQueries:
         return products
 
     @staticmethod
+    def get_one_product_by_id(product_id: int):
+        query = (
+            select(Product).filter(Product.product_id == product_id)
+        )
+        product = db.session.execute(query).scalars().one_or_none()
+        return product
+
+    @staticmethod
     def delete_product(product_id: int):
         try:
             query = (
@@ -48,7 +57,7 @@ class AdminProductsQueries:
             return "Во время удаления произошла ошибка", False
 
     @staticmethod
-    def add_product_query(title, short_desc, desc, price, cat_name, image):
+    def add_product(title, short_desc, desc, price, cat_name, image):
         try:
             if not image:
                 return "Для создания продукта необходимо загрузить изображение", False
@@ -84,6 +93,52 @@ class AdminProductsQueries:
             print(e)
             return "Ошибка при добавлении продукта", False
 
+    @staticmethod
+    def update_product(product_id, title, short_desc, desc, price, cat_name, image):
+        try:
+            query = (
+                select(Product).filter(Product.product_id == product_id)
+            )
+            product = db.session.execute(query).scalars().one_or_none()
+
+            if not product:
+                return "Такого продукта не существует", False
+
+            product_image = deepcopy(product.image)
+            my_decimal = Decimal(str(price)).quantize(Decimal('0.01'))
+
+            if not image or image.filename == "":
+                stmt = (
+                    update(Product).filter(Product.product_id == product_id).values(title=title,
+                                                                                    short_description=short_desc,
+                                                                                    description=desc, price=my_decimal,
+                                                                                    category_title=cat_name)
+                )
+                db.session.execute(stmt)
+                db.session.commit()
+
+                return "Продукт обновлен", True
+
+            if image and allowed_file(image.filename):
+                stmt = (
+                    update(Product).filter(Product.product_id == product_id).values(title=title,
+                                                                                    short_description=short_desc,
+                                                                                    description=desc, price=my_decimal,
+                                                                                    category_title=cat_name,
+                                                                                    image=image.filename)
+                )
+                db.session.execute(stmt)
+                db.session.commit()
+
+                os.remove(PRODUCTS_UPLOAD_FOLDER + product_image)
+                image.save(os.path.join(PRODUCTS_UPLOAD_FOLDER, image.filename))
+
+                return "Продукт обновлен", True
+
+        except Exception as e:
+            print(e)
+            return "Ошибка при обновлении продукта", False
+
 
 class AdminFeedbacksQueries:
 
@@ -103,6 +158,26 @@ class AdminFeedbacksQueries:
 
         feedbacks = db.session.execute(query).scalars().all()
         return feedbacks
+
+    @staticmethod
+    def delete_feedback(feedback_id: int):
+        try:
+            query = (
+                select(Feedback).filter(Feedback.feedback_id == feedback_id)
+            )
+            fb = db.session.execute(query).scalars().one_or_none()
+            if fb:
+                stmt = (
+                    delete(Feedback).filter(Feedback.feedback_id == feedback_id)
+                )
+                db.session.execute(stmt)
+                db.session.commit()
+                return "Успешно удалено", True
+            else:
+                return "Такого обращения не существует", False
+        except Exception as e:
+            print(e)
+            return "Во время удаления произошла ошибка", False
 
 
 class AdminUsersQueries:

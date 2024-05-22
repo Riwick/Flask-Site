@@ -30,6 +30,7 @@
                     Номер телефона: {{ feedback.phone_number }}
                 </p>
                 <span style="display: flex; justify-content: flex-end;">
+                    <a href="/admin/feedbacks/{{ feedback.feedback_id }}/delete" class="btn btn-danger" style="height: 40px; margin-right: 10px;">Удалить</a>
                     <a href="/admin/feedbacks/{{ feedback.feedback_id }}" class="btn btn-warning" style="height: 40px;">Подробнее</a>
                 </span>
                 </div>

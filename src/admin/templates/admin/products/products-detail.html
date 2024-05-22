@@ -1,0 +1,71 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="py-5 text-center">
+      <h1 style="color: #ffc107;">{{ product.title }}</h1>
+    </div>
+</div>
+    <div class="container" style="margin-bottom: 40px;">
+        <img class="shadow-sm" src="{{ url_for('uploaded_product_file', filename=product.image) }}" height="300px;" width="100%;" style="margin-bottom: 1%; margin-top: 1%; border-radius: 5px; border: 3px #ffc107 solid;">
+        <form method="post" enctype="multipart/form-data">
+             <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Фотография</label>
+                  <input type="file" class="form-control" name="image">
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="ID" class="form-label">ID</label>
+                    <p class="form-control" id="ID">{{ product.product_id }}</p>
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="title" class="form-label">Название</label>
+                  <input type="text" class="form-control" id="title" name="title" value="{{ product.title }}">
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="price" class="form-label">Цена</label>
+                  <input type="text" class="form-control" id="price" name="price" value="{{ product.price }}">
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="created_at" class="form-label">Дата создания</label>
+                  <div class="input-group has-validation">
+                    <input type="text" class="form-control" id="created_at" name="created_at" value="{{ product.created_at }}" readonly>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="short_desc" class="form-label">Описание</label>
+                  <input type="text" class="form-control" id="short_desc" name="short_desc" value="{{ product.short_description }}">
+                </div>
+
+                <div class="col-12">
+                    <label for="desc" class="form-label">Описание</label>
+                    <textarea class="form-control" id="desc" name="desc" rows="5">{{ product.description }}</textarea>
+                </div>
+
+                <div class="col-12">
+                  <label for="category" class="form-label">Категория</label>
+                  <select class="form-select" id="category" name="cat_name">
+                    <option value="{{ product.category_title }}" class="text-warning">{{ product.category_title }}</option>
+                      {% for category in categories %}
+                        {% if not category.title == product.category_title %}
+                          <option class="text-black">{{ category.title }}</option>
+                        {% endif %}
+                      {% endfor %}
+                  </select>
+                </div>
+
+              </div>
+            <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                <input type="submit" class="btn btn-success" value="Обновить" style="height: 50px; font-size: 20px;">
+            </div>
+        </form>
+    </div>
+{% endblock %}

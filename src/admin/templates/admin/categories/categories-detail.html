@@ -1,0 +1,35 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="py-5 text-center">
+      <h1 style="color: #ffc107;">{{ category.title }}</h1>
+    </div>
+</div>
+    <div class="container" style="margin-bottom: 40px;">
+        <form method="post">
+             <div class="row g-3">
+                <div class="col-sm-6">
+                  <label for="ID" class="form-label">ID</label>
+                    <p class="form-control" id="ID">{{ category.category_id }}</p>
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="title" class="form-label">Название</label>
+                  <input type="text" class="form-control" id="title" name="title" value="{{ category.title }}">
+                </div>
+
+                <div class="col-12">
+                  <label for="short_desc" class="form-label">Краткое описание</label>
+                  <input type="text" class="form-control" id="short_desc" name="short_desc" value="{{ category.short_description }}">
+                </div>
+              </div>
+            <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                <input type="submit" class="btn btn-success" value="Обновить" style="height: 50px; font-size: 20px;">
+            </div>
+        </form>
+    </div>
+{% endblock %}

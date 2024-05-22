@@ -41,26 +41,3 @@ def get_one_product(product_id: int):
         abort(404)
     return render_template("products/products-detail.html", product=product, title=product.title)
 
-
-@products_router.route("/add_product/", methods=["GET", "POST"])
-def add_product():
-    if request.method == "POST":
-        detail, status = ProductQueries.add_product_query(request.form["title"], request.form["short_desc"],
-                                                          request.form["desc"],  request.form["price"],
-                                                          request.form["cat_id"],  request.files["image"])
-        if status:
-            flash("Продукт добавлен", category="success")
-        else:
-            flash(detail, category="error")
-    return render_template("products/add_product.html", title="Добавление продукта")
-
-
-@products_router.route("/<int:product_id>/delete_product/", methods=["DELETE", "POST", "GET"])
-def delete_product(product_id: int):
-    detail, status = ProductQueries.delete_product_query(product_id)
-    if status:
-        flash(detail, category="success")
-    else:
-        flash(detail, category="error")
-
-    return redirect("/products")
