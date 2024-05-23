@@ -18,7 +18,7 @@ app = Flask(__name__, template_folder="src/templates/")
 
 
 if not os.path.exists("src/products/static/images/products_images/"):  # создание папки для изображений продуктов
-    os.mkdir("src/users/static/images/users_images/")
+    os.mkdir("src/products/static/images/products_images/")
 
 if not os.path.exists("src/users/static/images/users_images/"):  # создание папки для изображений пользователей
     os.mkdir("src/users/static/images/users_images/")

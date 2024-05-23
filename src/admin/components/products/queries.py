@@ -13,28 +13,37 @@ class AdminProductsQueries:
 
     @staticmethod
     def get_3_last_products_for_main_page():
-        query = (
-            select(Product).order_by(Product.created_at.desc()).limit(3)
-        )
-        products = db.session.execute(query).scalars().all()
-        return products
+        try:
+            query = (
+                select(Product).order_by(Product.created_at.desc()).limit(3)
+            )
+            products = db.session.execute(query).scalars().all()
+            return products
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_all_products():
-        query = (
-            select(Product).order_by(Product.created_at.desc())
-        )
+        try:
+            query = (
+                select(Product).order_by(Product.created_at.desc())
+            )
 
-        products = db.session.execute(query).scalars().all()
-        return products
+            products = db.session.execute(query).scalars().all()
+            return products
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_one_product_by_id(product_id: int):
-        query = (
-            select(Product).filter(Product.product_id == product_id)
-        )
-        product = db.session.execute(query).scalars().one_or_none()
-        return product
+        try:
+            query = (
+                select(Product).filter(Product.product_id == product_id)
+            )
+            product = db.session.execute(query).scalars().one_or_none()
+            return product
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def delete_product(product_id: int):

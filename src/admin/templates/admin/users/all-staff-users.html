@@ -11,6 +11,9 @@
         <small>Если вы не являетесь администратором, то, пожалуйста, выйдите из своего аккаунта и умрите</small>
     </div>
   </div>
+    <div style="margin-top: 50px;">
+    {{ pagination.links }}
+    </div>
       {% for user in users %}
       <div class="my-3 p-3 bg-body rounded shadow-sm">
           <h4 class="border-bottom">
@@ -61,5 +64,8 @@
       </div>
 </div>
 {% endfor %}
+    <div style="margin-top: 50px;">
+    {{ pagination.links }}
+    </div>
 </main>
 {% endblock %}

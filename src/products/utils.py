@@ -8,17 +8,4 @@ def get_pagination(total: list, page, per_page):
     return pagination
 
 
-def get_paginated_products(products, page, per_page):
-    paginated_products = None
-
-    if page == 1:
-        paginated_products = products[:per_page]
-    if page == 2:
-        paginated_products = products[per_page: per_page * page]
-    if page > 2:
-        paginated_products = products[per_page * (page - 1): (per_page * page) + per_page]
-
-    return paginated_products
-
-
 PRODUCTS_UPLOAD_FOLDER = "src/products/static/images/products_images/"

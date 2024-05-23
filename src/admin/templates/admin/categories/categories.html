@@ -14,6 +14,9 @@
     <div class="d-grid gap-2">
         <a href="/admin/categories/add-category" class="btn btn-success btn-lg">Добавить категорию</a>
     </div>
+    <div style="margin-top: 50px;">
+    {{ pagination.links }}
+    </div>
     {% if not categories %}
         <h1 class="text-center">Тут пока ничего нет</h1>
     {% else%}
@@ -42,5 +45,8 @@
         </div>
         {% endfor %}
     {% endif %}
+    <div style="margin-top: 50px;">
+    {{ pagination.links }}
+    </div>
 </main>
 {% endblock %}

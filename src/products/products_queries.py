@@ -1,11 +1,6 @@
-import os.path
-from decimal import Decimal
-
-from sqlalchemy import select, insert, delete
+from sqlalchemy import select, delete
 
 from src.database import Product, db, Category
-from src.utils import allowed_file
-from src.products.utils import PRODUCTS_UPLOAD_FOLDER
 
 
 class ProductQueries:
@@ -34,25 +29,15 @@ class ProductQueries:
             print(e)
 
     @staticmethod
-    def delete_product_query(product_id):
+    def get_all_categories():
         try:
-            stmt = (
-                delete(Product).filter(Product.product_id == product_id)
+            query = (
+                select(Category).order_by(Category.title)
             )
-            db.session.execute(stmt)
-            db.session.commit()
-            return "Продукт был удалён", True
+            categories = db.session.execute(query).scalars().all()
+            return categories
         except Exception as e:
             print(e)
-            return "Ошибка удаления продукта", False
-
-    @staticmethod
-    def get_all_categories():
-        query = (
-            select(Category)
-        )
-        categories = db.session.execute(query).scalars().all()
-        return categories
 
     @staticmethod
     def get_products_by_category(category_title):
@@ -65,3 +50,10 @@ class ProductQueries:
         except Exception as e:
             print(e)
 
+    @staticmethod
+    def get_sorted_products(order_by):
+        query = (
+            select(Product).order_by(order_by)
+        )
+        products = db.session.execute(query).scalars().all()
+        return products

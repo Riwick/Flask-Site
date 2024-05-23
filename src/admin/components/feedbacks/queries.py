@@ -7,28 +7,37 @@ class AdminFeedbacksQueries:
 
     @staticmethod
     def get_3_last_feedbacks_for_main_page():
-        query = (
-            select(Feedback).order_by(Feedback.feedback_id.desc()).limit(3)
-        )
-        feedbacks = db.session.execute(query).scalars().all()
-        return feedbacks
+        try:
+            query = (
+                select(Feedback).order_by(Feedback.feedback_id.desc()).limit(3)
+            )
+            feedbacks = db.session.execute(query).scalars().all()
+            return feedbacks
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_all_feedbacks():
-        query = (
-            select(Feedback).order_by(Feedback.feedback_id.desc())
-        )
+        try:
+            query = (
+                select(Feedback).order_by(Feedback.feedback_id.desc())
+            )
 
-        feedbacks = db.session.execute(query).scalars().all()
-        return feedbacks
+            feedbacks = db.session.execute(query).scalars().all()
+            return feedbacks
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_one_feedback_by_id(feedback_id):
-        query = (
-            select(Feedback).filter(Feedback.feedback_id == feedback_id)
-        )
-        fb = db.session.execute(query).scalars().one_or_none()
-        return fb
+        try:
+            query = (
+                select(Feedback).filter(Feedback.feedback_id == feedback_id)
+            )
+            fb = db.session.execute(query).scalars().one_or_none()
+            return fb
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def delete_feedback(feedback_id: int):

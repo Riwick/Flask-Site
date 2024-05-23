@@ -1,8 +1,11 @@
 from flask import Blueprint, flash, request, redirect, render_template
 from flask_login import login_required
+from flask_paginate import get_page_parameter
 
 from src.admin.components.categories.queries import AdminCategoriesQueries
 from src.admin.utils import check_current_user
+from src.products.utils import get_pagination
+from src.utils import get_paginated_staff, PER_PAGE
 
 admin_categories_router = Blueprint("admin_categories_router", __name__)
 
@@ -12,7 +15,11 @@ admin_categories_router = Blueprint("admin_categories_router", __name__)
 def get_all_categories():
     if check_current_user():
         categories = AdminCategoriesQueries.get_all_categories()
-        return render_template("admin/categories/categories.html", categories=categories,
+
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        paginated_categories = get_paginated_staff(page=page, staff=categories, per_page=PER_PAGE)
+        return render_template("admin/categories/categories.html", categories=paginated_categories,
+                               pagination=get_pagination(page=page, per_page=PER_PAGE, total=categories),
                                title="Категории")
     return redirect("/")
 

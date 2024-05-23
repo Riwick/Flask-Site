@@ -13,43 +13,58 @@ class AdminUsersQueries:
 
     @staticmethod
     def get_all_users():
-        query = (
-            select(User)
-        )
-        users = db.session.execute(query).scalars().all()
-        return users
+        try:
+            query = (
+                select(User)
+            )
+            users = db.session.execute(query).scalars().all()
+            return users
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_all_staff_users():
-        query = (
-            select(User).filter(or_(User.is_staff, User.is_superuser))
-        )
-        users = db.session.execute(query).scalars().all()
-        return users
+        try:
+            query = (
+                select(User).filter(or_(User.is_staff, User.is_superuser))
+            )
+            users = db.session.execute(query).scalars().all()
+            return users
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_3_last_users():
-        query = (
-            select(User).order_by(User.register_at.desc()).limit(3)
-        )
-        users = db.session.execute(query).scalars().all()
-        return users
+        try:
+            query = (
+                select(User).order_by(User.register_at.desc()).limit(3)
+            )
+            users = db.session.execute(query).scalars().all()
+            return users
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_3_last_staff_users():
-        query = (
-            select(User).order_by(User.register_at.desc()).filter(or_(User.is_staff, User.is_superuser)).limit(3)
-        )
-        users = db.session.execute(query).scalars().all()
-        return users
+        try:
+            query = (
+                select(User).order_by(User.register_at.desc()).filter(or_(User.is_staff, User.is_superuser)).limit(3)
+            )
+            users = db.session.execute(query).scalars().all()
+            return users
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_one_user_by_id(user_id):
-        query = (
-            select(User).filter(User.user_id == user_id)
-        )
-        user = db.session.execute(query).scalars().one_or_none()
-        return user
+        try:
+            query = (
+                select(User).filter(User.user_id == user_id)
+            )
+            user = db.session.execute(query).scalars().one_or_none()
+            return user
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def update_user(image, name, surname, username, address, additional_address, country, user_id, address_conf,

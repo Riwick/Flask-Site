@@ -6,7 +6,7 @@ from src.users.users_queries import UserQueries
 from src.users.users_utils import UserLogin, get_total_basket_sum
 from src.users.forms import LoginForm, RegisterForm
 
-user_router = Blueprint("users", __name__, template_folder="templates", static_folder="static")
+user_router = Blueprint("users_router", __name__, template_folder="templates", static_folder="static")
 
 
 @user_router.route("/login", methods=["GET", "POST"])

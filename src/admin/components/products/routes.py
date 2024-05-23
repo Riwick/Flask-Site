@@ -1,9 +1,12 @@
 from flask import Blueprint, render_template, redirect, flash, request
 from flask_login import login_required
+from flask_paginate import get_page_parameter
 
 from src.admin.components.categories.queries import AdminCategoriesQueries
 from src.admin.components.products.queries import AdminProductsQueries
 from src.admin.utils import check_current_user
+from src.products.utils import get_pagination
+from src.utils import get_paginated_staff, PER_PAGE
 
 admin_product_router = Blueprint("admin_product_router", __name__)
 
@@ -13,8 +16,12 @@ admin_product_router = Blueprint("admin_product_router", __name__)
 def all_products():
     if check_current_user():
         products = AdminProductsQueries.get_all_products()
-        return render_template("admin/products/products.html",
-                               products=products, title="Продукты")
+
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        paginated_products = get_paginated_staff(page=page, staff=products, per_page=PER_PAGE)
+        return render_template("admin/products/products.html", products=paginated_products,
+                               title="Продукты", pagination=get_pagination(page=page, per_page=PER_PAGE,
+                                                                           total=products))
     return redirect("/")
 
 

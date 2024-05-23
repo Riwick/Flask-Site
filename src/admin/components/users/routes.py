@@ -1,8 +1,11 @@
 from flask import Blueprint, request, flash, render_template, redirect
 from flask_login import login_required
+from flask_paginate import get_page_parameter
 
 from src.admin.components.users.queries import AdminUsersQueries
 from src.admin.utils import check_phone_conf, check_address_conf, check_current_user, check_is_staff, check_email_conf
+from src.products.utils import get_pagination
+from src.utils import get_paginated_staff, PER_PAGE
 
 admin_users_router = Blueprint("admin_users_router", __name__)
 
@@ -23,8 +26,12 @@ def users_index():
 def get_all_users():
     if check_current_user():
         users = AdminUsersQueries.get_all_users()
-        return render_template("admin/users/all-users.html",
-                               users=users, title="Все пользователи")
+
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        paginated_users = get_paginated_staff(page=page, staff=users, per_page=PER_PAGE)
+        return render_template("admin/users/all-users.html", users=paginated_users,
+                               title="Все пользователи", pagination=get_pagination(page=page, per_page=PER_PAGE,
+                                                                                   total=users))
     return redirect("/")
 
 
@@ -33,8 +40,12 @@ def get_all_users():
 def get_all_staff_users():
     if check_current_user():
         users = AdminUsersQueries.get_all_staff_users()
-        return render_template("admin/users/all-staff-users.html",
-                               users=users, title="Весь персонал")
+
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        paginated_users = get_paginated_staff(page=page, staff=users, per_page=PER_PAGE)
+        return render_template("admin/users/all-staff-users.html", users=paginated_users,
+                               title="Весь персонал", pagination=get_pagination(page=page, per_page=PER_PAGE,
+                                                                                total=users))
     return redirect("/")
 
 

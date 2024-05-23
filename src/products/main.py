@@ -1,15 +1,13 @@
-from flask import Blueprint, render_template, abort, request, redirect, flash
+from flask import Blueprint, render_template, abort, request
 from flask_login import current_user
 from flask_paginate import get_page_parameter
 
 from src.products.products_queries import ProductQueries
 from src.users.users_queries import UserQueries
-from src.products.utils import get_pagination, get_paginated_products
+from src.products.utils import get_pagination
+from src.utils import get_paginated_staff, PER_PAGE
 
-products_router = Blueprint("products", __name__, template_folder="templates", static_folder="static")
-
-
-PER_PAGE = 10
+products_router = Blueprint("products_router", __name__, template_folder="templates", static_folder="static")
 
 
 @products_router.route("/", methods=["GET"])
@@ -26,7 +24,7 @@ def get_all_products():
     categories = ProductQueries.get_all_categories()
 
     page = request.args.get(get_page_parameter(), type=int, default=1)
-    paginated_products = get_paginated_products(page=page, products=products, per_page=PER_PAGE)
+    paginated_products = get_paginated_staff(page=page, staff=products, per_page=PER_PAGE)
 
     return render_template("products/products.html",
                            products=paginated_products,

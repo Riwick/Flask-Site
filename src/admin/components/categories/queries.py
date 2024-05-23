@@ -7,27 +7,36 @@ class AdminCategoriesQueries:
 
     @staticmethod
     def get_3_last_categories_for_main_page():
-        query = (
-            select(Category).order_by(Category.category_id.desc()).limit(3)
-        )
-        categories = db.session.execute(query).scalars().all()
-        return categories
+        try:
+            query = (
+                select(Category).order_by(Category.category_id.desc()).limit(3)
+            )
+            categories = db.session.execute(query).scalars().all()
+            return categories
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_all_categories():
-        query = (
-            select(Category).order_by(Category.category_id.desc())
-        )
-        categories = db.session.execute(query).scalars().all()
-        return categories
+        try:
+            query = (
+                select(Category).order_by(Category.category_id.desc())
+            )
+            categories = db.session.execute(query).scalars().all()
+            return categories
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_one_category_by_id(category_id):
-        query = (
-            select(Category).filter(Category.category_id == category_id)
-        )
-        category = db.session.execute(query).scalars().one_or_none()
-        return category
+        try:
+            query = (
+                select(Category).filter(Category.category_id == category_id)
+            )
+            category = db.session.execute(query).scalars().one_or_none()
+            return category
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def delete_category_by_id(category_id: int):

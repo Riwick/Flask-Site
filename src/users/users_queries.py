@@ -49,20 +49,25 @@ class UserQueries:
 
     @staticmethod
     def get_basket_products_query(user_id):
-        query = (
-            select(User).filter(User.user_id == user_id).options(selectinload(User.basket_products))
-        )
-        basket = db.session.execute(query).scalars().one_or_none()
-        return basket
+        try:
+            query = (
+                select(User).filter(User.user_id == user_id).options(selectinload(User.basket_products))
+            )
+            basket = db.session.execute(query).scalars().one_or_none()
+            return basket
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def get_basket_query(user_id):
-        query = (
-            select(Basket).filter(Basket.user_id == user_id)
-        )
-        basket = db.session.execute(query).scalars().all()
-        print(basket)
-        return basket
+        try:
+            query = (
+                select(Basket).filter(Basket.user_id == user_id)
+            )
+            basket = db.session.execute(query).scalars().all()
+            return basket
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def delete_product_from_basket_query(user_id, product_id):
@@ -108,11 +113,14 @@ class UserQueries:
 
     @staticmethod
     def get_user_by_id(user_id):
-        query = (
-            select(User).filter(User.user_id == user_id)
-        )
-        user = db.session.execute(query).scalars().one_or_none()
-        return user
+        try:
+            query = (
+                select(User).filter(User.user_id == user_id)
+            )
+            user = db.session.execute(query).scalars().one_or_none()
+            return user
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def update_profile_query(image, name, surname, username, address, additional_address, country, user_id):

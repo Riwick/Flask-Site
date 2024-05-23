@@ -37,24 +37,24 @@ def contacts():
     return render_template("contacts.html", title="Обратная связь", form=form)
 
 
-@main_router.route("/test-route/")
-def test_route():
-    if "visits" in session:
-        session["visits"] = session.get("visits") + 1
-    else:
-        session["visits"] = 1
-    return f"<h1>Main Page</h1><p>Количество просмотров: {session['visits']}</p>"
-
-
-data = [1, 2, 3, 4]
-
-
-@main_router.route("/session/")
-def session_route():
-    session.permanent = True  # Параметр, необходимый для сохранения сессии после закрытия браузера
-    if "data" not in session:
-        session["data"] = data
-    else:
-        session["data"][1] += 1
-        session.modified = True  # Параметр, указывающий браузеру, что мы обновили данные в сессии
-    return f"session['data']: {session['data']}"
+# @main_router.route("/test-route/")
+# def test_route():
+#     if "visits" in session:
+#         session["visits"] = session.get("visits") + 1
+#     else:
+#         session["visits"] = 1
+#     return f"<h1>Main Page</h1><p>Количество просмотров: {session['visits']}</p>"
+#
+#
+# data = [1, 2, 3, 4]
+#
+#
+# @main_router.route("/session/")
+# def session_route():
+#     session.permanent = True  # Параметр, необходимый для сохранения сессии после закрытия браузера
+#     if "data" not in session:
+#         session["data"] = data
+#     else:
+#         session["data"][1] += 1
+#         session.modified = True  # Параметр, указывающий браузеру, что мы обновили данные в сессии
+#     return f"session['data']: {session['data']}"
