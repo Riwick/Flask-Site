@@ -1,10 +1,16 @@
-from flask import Blueprint, redirect, render_template, flash, request, url_for
-from flask_login import current_user, login_required
+from flask import Blueprint, redirect, render_template, flash, request
+from flask_login import login_required
 
-from src.admin.admin_queries import AdminProductsQueries, AdminUsersQueries, AdminCategoriesQueries, \
-    AdminFeedbacksQueries
+from src.admin.components.feedbacks.queries import AdminFeedbacksQueries
+from src.admin.components.users.queries import AdminUsersQueries
+from src.admin.components.categories.queries import AdminCategoriesQueries
+from src.admin.components.products.queries import AdminProductsQueries
 from src.admin.utils import check_current_user, check_address_conf, check_email_conf, check_phone_conf, check_is_staff
-from src.products.products_queries import ProductQueries
+
+from src.admin.components.categories.routes import admin_categories_router
+from src.admin.components.products.routes import admin_product_router
+from src.admin.components.users.routes import admin_users_router
+from src.admin.components.feedbacks.routes import admin_feedbacks_router
 
 admin_router = Blueprint("admin", __name__, template_folder="templates", static_folder="static")
 
@@ -23,218 +29,16 @@ def index():
 
 """Роуты продуктов"""
 
-
-@admin_router.route("/products")
-@login_required
-def all_products():
-    if check_current_user():
-        products = AdminProductsQueries.get_all_products()
-        return render_template("admin/products/products.html",
-                               products=products, title="Продукты")
-    return redirect("/")
-
-
-@admin_router.route("/products/<int:product_id>/delete", methods=["GET", "POST", "DELETE"])
-@login_required
-def delete_product(product_id: int):
-    if check_current_user():
-        detail, status = AdminProductsQueries.delete_product(product_id)
-        if status:
-            flash(detail, category="success")
-            return redirect(request.referrer)
-        else:
-            flash(detail, category="error")
-    return redirect("/")
-
-
-@admin_router.route("/products/add-product", methods=["GET", "POST"])
-@login_required
-def add_product():
-    if check_current_user():
-        if request.method == "POST":
-            detail, status = AdminProductsQueries.add_product(request.form["title"], request.form["short_desc"],
-                                                              request.form["desc"], request.form["price"],
-                                                              request.form["cat_name"], request.files["image"])
-            if status:
-                flash(detail, category="success")
-            else:
-                flash(detail, category="error")
-
-        categories = AdminCategoriesQueries.get_all_categories()
-        return render_template("admin/products/add_product.html", categories=categories)
-
-    return redirect("/")
-
-
-@admin_router.route("/products/<int:product_id>", methods=["GET", "POST", "PUT"])
-@login_required
-def update_product(product_id: int):
-    if check_current_user():
-        if request.method == "POST" or request.method == "PUT":
-            detail, status = AdminProductsQueries.update_product(product_id, request.form["title"],
-                                                                 request.form["short_desc"],
-                                                                 request.form["desc"], request.form["price"],
-                                                                 request.form["cat_name"], request.files["image"])
-            if status:
-                flash(detail, category="success")
-            else:
-                flash(detail, category="error")
-
-        categories = AdminCategoriesQueries.get_all_categories()
-        product = AdminProductsQueries.get_one_product_by_id(product_id)
-
-        return render_template("admin/products/products-detail.html", categories=categories,
-                               product=product, title=f"Обновление продукта - {product.title}")
-
-    return redirect("/")
-
+admin_router.register_blueprint(admin_product_router)
 
 """Роуты обратной связи"""
 
-
-@admin_router.route("/feedbacks")
-@login_required
-def all_feedbacks():
-    if check_current_user():
-        feedbacks = AdminFeedbacksQueries.get_all_feedbacks()
-        return render_template("admin/feedbacks/feedbacks.html",
-                               feedbacks=feedbacks, title="Обращения")
-    return redirect("/")
-
-
-@admin_router.route("/feedbacks/<int:feedback_id>/delete", methods=["GET", "POST", "DELETE"])
-@login_required
-def delete_feedback(feedback_id: int):
-    if check_current_user():
-        detail, status = AdminFeedbacksQueries.delete_feedback(feedback_id)
-        if status:
-            flash(detail, category="success")
-            return redirect(request.referrer)
-        else:
-            flash(detail, category="error")
-
-    return redirect("/")
-
+admin_router.register_blueprint(admin_feedbacks_router)
 
 """Роуты пользователей"""
 
-
-@admin_router.route("/users")
-@login_required
-def users_index():
-    if check_current_user():
-        users = AdminUsersQueries.get_3_last_users()
-        staff_users = AdminUsersQueries.get_3_last_staff_users()
-        return render_template("admin/users/users.html", title="Пользователи",
-                               users=users, staff_users=staff_users)
-    return redirect("/")
-
-
-@admin_router.route("/users/all/")
-@login_required
-def get_all_users():
-    if check_current_user():
-        users = AdminUsersQueries.get_all_users()
-        return render_template("admin/users/all-users.html",
-                               users=users, title="Все пользователи")
-    return redirect("/")
-
-
-@admin_router.route("/users/staff")
-@login_required
-def get_all_staff_users():
-    if check_current_user():
-        users = AdminUsersQueries.get_all_staff_users()
-        return render_template("admin/users/all-staff-users.html",
-                               users=users, title="Весь персонал")
-    return redirect("/")
-
-
-@admin_router.route("/users/<int:user_id>", methods=["GET", "POST"])
-@login_required
-def get_user_profile(user_id: int):
-    if check_current_user():
-        if request.method == "POST":
-            address_conf = check_address_conf(request.form.get("address_conf_1"), request.form.get("address_conf_2"))
-            email_conf = check_email_conf(request.form.get("email_conf"))
-            phone_cong = check_phone_conf(request.form.get("phone_conf"))
-            is_staff, is_superuser = check_is_staff(request.form.get("is_staff"), request.form.get("is_superuser"))
-
-            detail, status = AdminUsersQueries.update_user(request.files.get("image"), request.form.get("name"),
-                                                           request.form.get("surname"), request.form.get("username"),
-                                                           request.form.get("address"),
-                                                           request.form.get("additional_address"),
-                                                           request.form.get("country"), user_id, address_conf,
-                                                           email_conf, phone_cong, is_staff, is_superuser)
-            if status:
-                flash(detail, category="success")
-            else:
-                flash(detail, category="error")
-
-        user = AdminUsersQueries.get_one_user_by_id(user_id)
-        return render_template("admin/users/user-profile.html", user=user,
-                               title="Профиль пользователя")
-    return redirect("/")
-
+admin_router.register_blueprint(admin_users_router)
 
 """Роуты категорий"""
 
-
-@admin_router.route("/categories")
-@login_required
-def get_all_categories():
-    if check_current_user():
-        categories = AdminCategoriesQueries.get_all_categories()
-        return render_template("admin/categories/categories.html", categories=categories,
-                               title="Категории")
-    return redirect("/")
-
-
-@admin_router.route("/categories/<int:category_id>/delete", methods=["GET", "POST"])
-@login_required
-def delete_category(category_id: int):
-    if check_current_user():
-        detail, status = AdminCategoriesQueries.delete_category_by_id(category_id)
-        if status:
-            flash(detail, category="success")
-            return redirect(request.referrer)
-        else:
-            flash(detail, category="error")
-
-    return redirect("/")
-
-
-@admin_router.route("/categories/add-category", methods=["GET", "POST"])
-@login_required
-def add_category():
-    if check_current_user():
-        if request.method == "POST":
-            detail, status = AdminCategoriesQueries.add_category(request.form["title"], request.form["short_desc"])
-            if status:
-                flash(detail, category="success")
-            else:
-                flash(detail, category="error")
-
-        return render_template("admin/categories/add_category.html", title="Добавление категории")
-
-    return redirect("/")
-
-
-@admin_router.route("/categories/<int:category_id>", methods=["GET", "POST", "PUT"])
-@login_required
-def update_category(category_id: int):
-    if check_current_user():
-        if request.method == "POST" or request.method == "PUT":
-            detail, status = AdminCategoriesQueries.update_category(category_id, request.form["title"],
-                                                                    request.form["short_desc"])
-            if status:
-                flash(detail, category="success")
-            else:
-                flash(detail, category="error")
-
-        category = AdminCategoriesQueries.get_one_category_by_id(category_id)
-
-        return render_template("admin/categories/categories-detail.html", category=category,
-                               title="Обновление категории")
-
-    return redirect("/")
+admin_router.register_blueprint(admin_categories_router)
