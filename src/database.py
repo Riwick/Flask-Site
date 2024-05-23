@@ -24,11 +24,16 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base, engine_options={"echo": True})
 
+
 integer_pk = Annotated[int, mapped_column(primary_key=True)]
+not_nullable_int = Annotated[int, mapped_column(nullable=False)]
+
 created_at = Annotated[datetime.datetime, mapped_column(default=datetime.datetime.utcnow)]
+
 not_nullable_str = Annotated[str, mapped_column(String(200), nullable=False)]
 nullable_str = Annotated[str, mapped_column(String(200), nullable=True, default="")]
-not_nullable_int = Annotated[int, mapped_column(nullable=False)]
+
+is_confirmed = Annotated[bool, mapped_column(default=False, nullable=True)]
 is_staff = Annotated[bool, mapped_column(default=False)]
 
 
@@ -44,7 +49,10 @@ class Product(db.Model):
     short_description: Mapped[str] = mapped_column(String(255), nullable=True)
     image: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
+
     price: Mapped[Decimal] = mapped_column(nullable=False)
+    count: Mapped[int] = mapped_column(default=0, nullable=True)
+
     category_title: Mapped[str] = mapped_column(ForeignKey("category.title", ondelete="SET NULL"), nullable=True)
     created_at: Mapped[created_at]
 
@@ -53,7 +61,7 @@ class Product(db.Model):
         secondary="basket"
     )
 
-    repr_cols = ("description", "price", "category_id")
+    repr_cols = ("description", "price", "category_title")
 
 
 class Feedback(db.Model):
@@ -76,11 +84,18 @@ class User(db.Model):
     name: Mapped[nullable_str]
     surname: Mapped[nullable_str]
     username: Mapped[not_nullable_str]
+
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
+    email_confirmed: Mapped[is_confirmed]
+
     phone: Mapped[str] = mapped_column(unique=True, nullable=False)
+    phone_confirmed: Mapped[is_confirmed]
+
     address: Mapped[nullable_str]
     additional_address: Mapped[nullable_str]
-    country: Mapped["Country"] = mapped_column(nullable=True, default=Country.Not_specified)
+    address_confirmed: Mapped[is_confirmed]
+
+    country: Mapped["Country"] = mapped_column(nullable=True, default="country.Not_specified")
 
     password: Mapped[not_nullable_str]
 

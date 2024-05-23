@@ -6,23 +6,27 @@ from src.users.users_queries import UserQueries
 from src.users.users_utils import UserLogin, get_total_basket_sum
 from src.users.forms import LoginForm, RegisterForm
 
-user_router = Blueprint("user_router", __name__, template_folder="templates", static_folder="static")
+user_router = Blueprint("users", __name__, template_folder="templates", static_folder="static")
 
 
 @user_router.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         return redirect("/users/profile")
+
     form = LoginForm()
     if form.validate_on_submit():
         user, status = UserQueries.select_user_by_email_query(form.email.data)
+
         if status and check_password_hash(user.password, form.password.data):
             user_login = UserLogin().create(user)
             rem_me = form.remember.data
             login_user(user_login, remember=rem_me)
             return redirect(request.args.get("next") or "/")
+
         else:
             flash("Неверные email или пароль", category="error")
+
     return render_template("users/login.html", title="Вход", form=form)
 
 
@@ -87,7 +91,7 @@ def delete_product_from_basket(user_id: int, product_id: int):
     else:
         flash(detail, category="error")
 
-    return redirect("/basket")
+    return redirect("/users/basket")
 
 
 @user_router.route("/<int:product_id>/<int:user_id>/add_to_basket")

@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from src.admin.admin_queries import AdminProductsQueries, AdminUsersQueries, AdminCategoriesQueries, \
     AdminFeedbacksQueries
-from src.admin.utils import check_current_user
+from src.admin.utils import check_current_user, check_address_conf, check_email_conf, check_phone_conf, check_is_staff
 from src.products.products_queries import ProductQueries
 
 admin_router = Blueprint("admin", __name__, template_folder="templates", static_folder="static")
@@ -147,6 +147,33 @@ def get_all_staff_users():
         users = AdminUsersQueries.get_all_staff_users()
         return render_template("admin/users/all-staff-users.html",
                                users=users, title="Весь персонал")
+    return redirect("/")
+
+
+@admin_router.route("/users/<int:user_id>", methods=["GET", "POST"])
+@login_required
+def get_user_profile(user_id: int):
+    if check_current_user():
+        if request.method == "POST":
+            address_conf = check_address_conf(request.form.get("address_conf_1"), request.form.get("address_conf_2"))
+            email_conf = check_email_conf(request.form.get("email_conf"))
+            phone_cong = check_phone_conf(request.form.get("phone_conf"))
+            is_staff, is_superuser = check_is_staff(request.form.get("is_staff"), request.form.get("is_superuser"))
+
+            detail, status = AdminUsersQueries.update_user(request.files.get("image"), request.form.get("name"),
+                                                           request.form.get("surname"), request.form.get("username"),
+                                                           request.form.get("address"),
+                                                           request.form.get("additional_address"),
+                                                           request.form.get("country"), user_id, address_conf,
+                                                           email_conf, phone_cong, is_staff, is_superuser)
+            if status:
+                flash(detail, category="success")
+            else:
+                flash(detail, category="error")
+
+        user = AdminUsersQueries.get_one_user_by_id(user_id)
+        return render_template("admin/users/user-profile.html", user=user,
+                               title="Профиль пользователя")
     return redirect("/")
 
 

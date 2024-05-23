@@ -98,15 +98,10 @@
                     <p class="card-text" >{{ product.short_description }}</p>
                     <h5 class="card-text text-warning">Категория: {{ product.category_title }}</h5>
                     <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
-                    {% if current_user.is_authenticated %}
-                      {% if current_user.is_superuser_or_is_staff() %}
-                        <a href="/products/{{ product.product_id }}/delete_product/" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить</a>
-                      {% endif %}
-                    {% endif %}
 
                     {% if current_user.is_authenticated %}
                       {% for basket in baskets if product.product_id == basket.product_id %}
-                        <a href="/basket" class="btn btn-secondary shadow-sm" style="margin-top: 10px;" >Перейти в корзину</a>
+                        <a href="/users/basket" class="btn btn-secondary shadow-sm" style="margin-top: 10px;" >Перейти в корзину</a>
                       {% else %}
                         <a href="/users/{{ product.product_id }}/{{ current_user.get_id() }}/add_to_basket" class="btn btn-success shadow-sm" style="margin-top: 10px;">Добавить в корзину</a>
                       {% endfor %}

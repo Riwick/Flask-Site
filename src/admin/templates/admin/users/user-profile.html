@@ -1,10 +1,125 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'admin/base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="py-5 text-center">
+      <h1>Профиль пользователя <span style="color: #ffc107;">{{ current_user.get_username() }}</span></h1>
+    </div>
+<div class="container">
+</div>
+    <div class="container">
+        <div class="image-container">
+            <img src="{{ url_for('uploaded_user_file', filename=user.user_image) }}" class="profile-image">
+        </div>
+        <form method="post" enctype="multipart/form-data">
+             <div class="row g-3">
+                <div class="col-sm-6">
+                  <label class="form-label">Фотография</label>
+                  <input type="file" class="form-control" name="image" placeholder="{{ user.user_image }}">
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="PhoneNumber" class="form-label">Номер телефона</label>
+                    <div class="input-group has-validation">
+                        {% if user.phone_confirmed %}
+                            <input type="checkbox" name="phone_conf" class="input-group-text" style="width: 40px; height: auto; margin-right: 5px;" checked>
+                        {% else %}
+                            <input type="checkbox" name="phone_conf" class="input-group-text" style="width: 40px; height: auto; margin-right: 5px;">
+                        {% endif %}
+                        <input type="text" class="form-control" name="phone" id="PhoneNumber" value="{{ user.phone }}" readonly>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="firstName" class="form-label">Имя</label>
+                  <input type="text" class="form-control" id="firstName" name="name" value="{{ user.name }}">
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="lastName" class="form-label">Фамилия</label>
+                  <input type="text" class="form-control" id="lastName" name="surname" value="{{ user.surname }}">
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="username" class="form-label">Имя пользователя</label>
+                  <div class="input-group has-validation">
+                    <span class="input-group-text">@</span>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required="">
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="email" class="form-label">Email<span class="text-body-secondary"></span></label>
+                    <div class="input-group has-validation">
+                        {% if user.email_confirmed %}
+                            <input type="checkbox" name="email_conf" class="input-group-text" style="width: 40px; height: auto; margin-right: 5px;" checked>
+                        {% else %}
+                            <input type="checkbox" name="email_conf" class="input-group-text" style="width: 40px; height: auto; margin-right: 5px;">
+                        {% endif %}
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="address" class="form-label">Адрес</label>
+                    <div class="input-group has-validation">
+                        {% if user.address_confirmed %}
+                            <input type="checkbox" name="address_conf_1" class="input-group-text" style="width: 40px; height: auto; margin-right: 5px;" checked>
+                        {% else %}
+                            <input type="checkbox" name="address_conf_1" class="input-group-text" style="width: 40px; height: auto; margin-right: 5px;">
+                        {% endif %}
+                        <input type="text" class="form-control" id="address" name="address" value="{{ user.address }}">
+                    </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="address2" class="form-label">Дополнительный адрес<span class="text-body-secondary">(Опционально)</span></label>
+                    <div class="input-group has-validation">
+                        {% if user.address_confirmed %}
+                            <input type="checkbox" name="address_conf_2" class="input-group-text" style="width: 40px; height: auto; margin-right: 5px;" checked>
+                        {% else %}
+                            <input type="checkbox" name="address_conf_2" class="input-group-text" style="width: 40px; height: auto; margin-right: 5px;">
+                        {% endif %}
+                        <input type="text" class="form-control" id="address2" name="additional_address" value="{{ user.additional_address }}">
+                    </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="country" class="form-label">Страна</label>
+                    <input type="text" class="form-control" value="{{ user.country.value }}" style="margin-bottom: 5px;" readonly>
+                  <select class="form-select" id="country" name="country">
+                    <option value="{{ user.country.name }}">Выбор...</option>
+                      <option>Russia</option>
+                      <option>Belarus</option>
+                      <option>Kazakhstan</option>
+                  </select>
+                </div >
+                 {% if current_user.is_superuser() %}
+                 <div class="col-12">
+                     <label  class="form-label" style="vertical-align: middle">Сотрудник?</label>
+                     {% if user.is_staff %}
+                        <input type="checkbox"  name="is_staff" style="width: 40px; height: 40px; margin-right: 5px;" checked>
+                     {% else %}
+                        <input type="checkbox" name="is_staff" style="width: 40px; height: 40px; margin-right: 5px;">
+                     {% endif %}
+                 </div>
+                 <div class="col-12">
+                     <label class="form-label" style="vertical-align: middle">Суперпользователь?</label>
+                     {% if user.is_superuser %}
+                        <input type="checkbox" name="is_superuser" style="width: 40px; height: 40px; margin-right: 5px;" checked>
+                     {% else %}
+                        <input type="checkbox" name="is_superuser" style="width: 40px; height: 40px; margin-right: 5px;">
+                     {% endif %}
+                 </div>
+                 {% endif %}
+
+              </div>
+            <div style="margin-top: 10px; margin-bottom: 40px; display: flex; justify-content: flex-end;">
+                <input type="submit" class="btn btn-success" value="Подтвердить" style="height: 50px; font-size: 20px;">
+            </div>
+        </form>
+    </div>
+{% endblock %}

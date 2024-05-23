@@ -41,7 +41,7 @@
                   <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.product_id }}</a>
                   <p class="card-text" >{{ product.short_description }}</p>
                   <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
-                  <a href="/basket/{{ current_user.get_id() }}/{{ product.product_id }}/delete" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить из корзины</a>
+                  <a href="/users/basket/{{ current_user.get_id() }}/{{ product.product_id }}/delete" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить из корзины</a>
                 </div>
               </div>
             </div>

@@ -4,8 +4,10 @@ from decimal import Decimal
 
 from sqlalchemy import select, or_, delete, insert, update
 
-from src.database import Product, Feedback, db, User, Category
+from src.admin.utils import update_profile_without_image_stmt, update_profile_image_stmt
+from src.database import Product, Feedback, db, User, Category, Country
 from src.products.utils import PRODUCTS_UPLOAD_FOLDER
+from src.users.users_utils import USER_UPLOAD_FOLDER
 from src.utils import allowed_file
 
 
@@ -39,10 +41,7 @@ class AdminProductsQueries:
     @staticmethod
     def delete_product(product_id: int):
         try:
-            query = (
-                select(Product).filter(Product.product_id == product_id)
-            )
-            product = db.session.execute(query).scalars().one_or_none()
+            product = AdminProductsQueries.get_one_product_by_id(product_id)
             if product:
                 stmt = (
                     delete(Product).filter(Product.product_id == product_id)
@@ -67,10 +66,7 @@ class AdminProductsQueries:
 
             if image and allowed_file(image.filename):
 
-                query = (
-                    select(Product)
-                )
-                products = db.session.execute(query).scalars().all()
+                products = AdminProductsQueries.get_all_products()
 
                 for product in products:
                     if product.title == title:
@@ -96,10 +92,7 @@ class AdminProductsQueries:
     @staticmethod
     def update_product(product_id, title, short_desc, desc, price, cat_name, image):
         try:
-            query = (
-                select(Product).filter(Product.product_id == product_id)
-            )
-            product = db.session.execute(query).scalars().one_or_none()
+            product = AdminProductsQueries.get_one_product_by_id(product_id)
 
             if not product:
                 return "Такого продукта не существует", False
@@ -170,10 +163,7 @@ class AdminFeedbacksQueries:
     @staticmethod
     def delete_feedback(feedback_id: int):
         try:
-            query = (
-                select(Feedback).filter(Feedback.feedback_id == feedback_id)
-            )
-            fb = db.session.execute(query).scalars().one_or_none()
+            fb = AdminFeedbacksQueries.get_one_feedback_by_id(feedback_id)
 
             if fb:
                 stmt = (
@@ -223,6 +213,59 @@ class AdminUsersQueries:
         users = db.session.execute(query).scalars().all()
         return users
 
+    @staticmethod
+    def get_one_user_by_id(user_id):
+        query = (
+            select(User).filter(User.user_id == user_id)
+        )
+        user = db.session.execute(query).scalars().one_or_none()
+        return user
+
+    @staticmethod
+    def update_user(image, name, surname, username, address, additional_address, country, user_id, address_conf,
+                    email_conf, phone_conf, is_staff, is_superuser):
+        try:
+            user = AdminUsersQueries.get_one_user_by_id(user_id)
+            last_user_image = deepcopy(user.user_image)
+            if user:
+                if last_user_image == image.filename or not image:
+                    try:
+                        stmt = update_profile_without_image_stmt(name, surname, username, address, additional_address,
+                                                                 country, user_id, address_conf, email_conf, phone_conf,
+                                                                 is_staff, is_superuser)
+                        db.session.execute(stmt)
+                        db.session.commit()
+                        return "Профиль обновлен", True
+                    except Exception as e:
+                        db.session.rollback()
+                        print(e)
+                        return "Во время обновления профиля произошла ошибка", False
+
+                if image and allowed_file(image.filename):
+                    try:
+                        stmt = update_profile_image_stmt(image, name, surname, username, address, additional_address,
+                                                         country, user_id, address_conf, email_conf, phone_conf,
+                                                         is_staff, is_superuser)
+                        db.session.execute(stmt)
+                        db.session.commit()
+                    except Exception as e:
+                        db.session.rollback()
+                        print(e)
+                        return "Во время обновления профиля произошла ошибка", False
+
+                    image.save(os.path.join(USER_UPLOAD_FOLDER, image.filename))
+                    os.remove(USER_UPLOAD_FOLDER + last_user_image)
+
+                    return "Профиль обновлен", True
+                else:
+                    return "Выбранная вами фотография не может быть использована в качестве аватара", False
+            else:
+                return "Профиля такого пользователя не существует", False
+
+        except Exception as e:
+            print(e)
+            return "Во время обновления профиля произошла ошибка", False
+
 
 class AdminCategoriesQueries:
 
@@ -253,10 +296,7 @@ class AdminCategoriesQueries:
     @staticmethod
     def delete_category_by_id(category_id: int):
         try:
-            query = (
-                select(Category).filter(Category.category_id == category_id)
-            )
-            category = db.session.execute(query).scalars().one_or_none()
+            category = AdminCategoriesQueries.get_one_category_by_id(category_id)
 
             if category:
                 stmt = (
@@ -274,10 +314,7 @@ class AdminCategoriesQueries:
     @staticmethod
     def add_category(category_title: str, short_desc: str):
         try:
-            query = (
-                select(Category)
-            )
-            categories = db.session.execute(query).scalars().all()
+            categories = AdminCategoriesQueries.get_all_categories()
 
             for category in categories:
                 if category.title == category_title:
@@ -297,10 +334,7 @@ class AdminCategoriesQueries:
     @staticmethod
     def update_category(category_id, title, short_desc):
         try:
-            query = (
-                select(Category).filter(Category.category_id == category_id)
-            )
-            category = db.session.execute(query).scalars().one_or_none()
+            category = AdminCategoriesQueries.get_one_category_by_id(category_id)
 
             if not category:
                 return "Такой категории не существует", False
