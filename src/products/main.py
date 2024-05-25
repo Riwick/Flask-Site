@@ -6,6 +6,7 @@ from src.products.products_queries import ProductQueries
 from src.users.users_queries import UserQueries
 from src.products.utils import get_pagination
 from src.utils import get_paginated_staff, PER_PAGE
+from src.caching import cache
 
 products_router = Blueprint("products_router", __name__, template_folder="templates", static_folder="static")
 

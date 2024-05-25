@@ -6,6 +6,7 @@ from src.admin.components.categories.queries import AdminCategoriesQueries
 from src.admin.utils import check_current_user
 from src.products.utils import get_pagination
 from src.utils import get_paginated_staff, PER_PAGE
+from src.caching import cache, delete_all_categories_cache
 
 admin_categories_router = Blueprint("admin_categories_router", __name__)
 
@@ -31,6 +32,7 @@ def delete_category(category_id: int):
         detail, status = AdminCategoriesQueries.delete_category_by_id(category_id)
         if status:
             flash(detail, category="success")
+            delete_all_categories_cache(category_id)
             return redirect(request.referrer)
         else:
             flash(detail, category="error")
@@ -46,6 +48,8 @@ def add_category():
             detail, status = AdminCategoriesQueries.add_category(request.form["title"], request.form["short_desc"])
             if status:
                 flash(detail, category="success")
+                cache.delete("categories")
+                cache.delete("admin-categories")
             else:
                 flash(detail, category="error")
 
@@ -63,6 +67,7 @@ def update_category(category_id: int):
                                                                     request.form["short_desc"])
             if status:
                 flash(detail, category="success")
+                delete_all_categories_cache(category_id)
             else:
                 flash(detail, category="error")
 

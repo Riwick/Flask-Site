@@ -8,6 +8,7 @@ from sqlalchemy.orm import selectinload
 from src.database import db, User, Basket
 from src.utils import allowed_file
 from src.users.users_utils import USER_UPLOAD_FOLDER, update_profile_image_stmt, update_profile_without_image_stmt
+from src.caching import cache, USERS_CACHE_TIME, BASKET_CACHE_TIME
 
 
 class UserQueries:
@@ -50,10 +51,13 @@ class UserQueries:
     @staticmethod
     def get_basket_products_query(user_id):
         try:
+            if cache.get(f"basket_products {user_id}"):
+                return cache.get(f"basket_products {user_id}")
             query = (
                 select(User).filter(User.user_id == user_id).options(selectinload(User.basket_products))
             )
             basket = db.session.execute(query).scalars().one_or_none()
+            cache.set(f"basket_products {user_id}", basket, BASKET_CACHE_TIME)
             return basket
         except Exception as e:
             print(e)
@@ -61,10 +65,13 @@ class UserQueries:
     @staticmethod
     def get_basket_query(user_id):
         try:
+            if cache.get(f"basket {user_id}"):
+                return cache.get(f"basket {user_id}")
             query = (
                 select(Basket).filter(Basket.user_id == user_id)
             )
             basket = db.session.execute(query).scalars().all()
+            cache.set(f"basket {user_id}", basket, BASKET_CACHE_TIME)
             return basket
         except Exception as e:
             print(e)
@@ -114,10 +121,13 @@ class UserQueries:
     @staticmethod
     def get_user_by_id(user_id):
         try:
+            if cache.get(f"user {user_id}"):
+                return cache.get(f"user {user_id}")
             query = (
                 select(User).filter(User.user_id == user_id)
             )
             user = db.session.execute(query).scalars().one_or_none()
+            cache.set(f"user {user_id}", user, USERS_CACHE_TIME)
             return user
         except Exception as e:
             print(e)

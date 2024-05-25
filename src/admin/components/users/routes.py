@@ -6,6 +6,7 @@ from src.admin.components.users.queries import AdminUsersQueries
 from src.admin.utils import check_phone_conf, check_address_conf, check_current_user, check_is_staff, check_email_conf
 from src.products.utils import get_pagination
 from src.utils import get_paginated_staff, PER_PAGE
+from src.caching import delete_all_user_cache
 
 admin_users_router = Blueprint("admin_users_router", __name__)
 
@@ -66,6 +67,7 @@ def get_user_profile(user_id: int):
                                                            request.form.get("country"), user_id, address_conf,
                                                            email_conf, phone_cong, is_staff, is_superuser)
             if status:
+                delete_all_user_cache(user_id)
                 flash(detail, category="success")
             else:
                 flash(detail, category="error")

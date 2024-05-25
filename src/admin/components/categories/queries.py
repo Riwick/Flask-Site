@@ -1,6 +1,7 @@
 from sqlalchemy import select, delete, insert, update
 
 from src.database import Category, db
+from src.caching import cache, CATEGORIES_CACHE_TIME
 
 
 class AdminCategoriesQueries:
@@ -8,10 +9,13 @@ class AdminCategoriesQueries:
     @staticmethod
     def get_3_last_categories_for_main_page():
         try:
+            if cache.get("admin-3_last_categories_for_main_page"):
+                return cache.get("admin-3_last_categories_for_main_page")
             query = (
                 select(Category).order_by(Category.category_id.desc()).limit(3)
             )
             categories = db.session.execute(query).scalars().all()
+            cache.set("admin-3_last_categories_for_main_page", categories, CATEGORIES_CACHE_TIME)
             return categories
         except Exception as e:
             print(e)
@@ -19,10 +23,13 @@ class AdminCategoriesQueries:
     @staticmethod
     def get_all_categories():
         try:
+            if cache.get("admin-categories"):
+                return cache.get("admin-categories")
             query = (
                 select(Category).order_by(Category.category_id.desc())
             )
             categories = db.session.execute(query).scalars().all()
+            cache.set("admin-categories", categories, CATEGORIES_CACHE_TIME)
             return categories
         except Exception as e:
             print(e)
@@ -30,10 +37,13 @@ class AdminCategoriesQueries:
     @staticmethod
     def get_one_category_by_id(category_id):
         try:
+            if cache.get(f"admin-category {category_id}"):
+                return cache.get(f"admin-category {category_id}")
             query = (
                 select(Category).filter(Category.category_id == category_id)
             )
             category = db.session.execute(query).scalars().one_or_none()
+            cache.set(f"admin-category {category_id}", category, CATEGORIES_CACHE_TIME)
             return category
         except Exception as e:
             print(e)

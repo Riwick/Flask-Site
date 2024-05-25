@@ -8,3 +8,12 @@ services:
     ports:
       - "10000:5432"
     restart: on-failure
+
+  redis:
+    image: redis:latest
+    container_name: Flask-Redis
+    restart: always
+    env_file:
+      - src/.env
+    ports:
+      - "6379:6379"

@@ -7,6 +7,7 @@ from sqlalchemy import select, delete, insert, update
 from src.database import Product, db
 from src.products.utils import PRODUCTS_UPLOAD_FOLDER
 from src.utils import allowed_file
+from src.caching import cache, PRODUCTS_CACHE_TIME
 
 
 class AdminProductsQueries:
@@ -14,10 +15,13 @@ class AdminProductsQueries:
     @staticmethod
     def get_3_last_products_for_main_page():
         try:
+            if cache.get("admin-3_last_products_for_main_page"):
+                return cache.get("admin-3_last_products_for_main_page")
             query = (
                 select(Product).order_by(Product.created_at.desc()).limit(3)
             )
             products = db.session.execute(query).scalars().all()
+            cache.set("admin-3_last_products_for_main_page", products, PRODUCTS_CACHE_TIME)
             return products
         except Exception as e:
             print(e)
@@ -25,11 +29,14 @@ class AdminProductsQueries:
     @staticmethod
     def get_all_products():
         try:
+            if cache.get("admin-products"):
+                return cache.get("admin-products")
             query = (
                 select(Product).order_by(Product.created_at.desc())
             )
 
             products = db.session.execute(query).scalars().all()
+            cache.set("admin-products", products, PRODUCTS_CACHE_TIME)
             return products
         except Exception as e:
             print(e)
@@ -37,10 +44,13 @@ class AdminProductsQueries:
     @staticmethod
     def get_one_product_by_id(product_id: int):
         try:
+            if cache.get(f"product {product_id}"):
+                return cache.get(f"product {product_id}")
             query = (
                 select(Product).filter(Product.product_id == product_id)
             )
             product = db.session.execute(query).scalars().one_or_none()
+            cache.set(f"product {product_id}", product, PRODUCTS_CACHE_TIME)
             return product
         except Exception as e:
             print(e)

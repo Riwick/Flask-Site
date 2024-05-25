@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from src.users.users_queries import UserQueries
 from src.users.users_utils import UserLogin, get_total_basket_sum
 from src.users.forms import LoginForm, RegisterForm
+from src.caching import cache, delete_all_user_cache, delete_all_user_cache_without_id, delete_all_basket_cache
 
 user_router = Blueprint("users_router", __name__, template_folder="templates", static_folder="static")
 
@@ -43,6 +44,7 @@ def register():
                                                              form.phone.data)
         if db_status:
             flash(db_detail, category="success")
+            delete_all_user_cache_without_id()
             return redirect("/users/login")
         else:
             flash(db_detail, category="error")
@@ -61,6 +63,7 @@ def profile():
                                                           request.form.get("country"), current_user.get_id())
         if status:
             flash(detail, category="success")
+            delete_all_user_cache(current_user.get_id())
         else:
             flash(detail, category="error")
 
@@ -88,6 +91,7 @@ def delete_product_from_basket(user_id: int, product_id: int):
     detail, result = UserQueries.delete_product_from_basket_query(user_id, product_id)
     if result:
         flash(detail, category="success")
+        delete_all_basket_cache(user_id)
     else:
         flash(detail, category="error")
 
@@ -100,6 +104,7 @@ def add_product_to_basket(product_id: int, user_id: int):
     detail, result = UserQueries.add_product_to_basket_query(product_id, user_id)
     if result:
         flash(detail, category="success")
+        delete_all_basket_cache(user_id)
     else:
         flash(detail, category="error")
 

@@ -3,12 +3,13 @@ from flask_login import login_required
 
 from src.main_queries import MainQueries
 from src.forms import FeedBackForm
-
+from src.caching import cache, simple_cache
 
 main_router = Blueprint("main_router", __name__)
 
 
 @main_router.route("/")
+@simple_cache.cached(timeout=60 * 60)
 def index():
     res_obj = make_response(render_template("index.html", title="Главная страница"), 200)
     res_obj.headers["Content-type"] = "text/html"
@@ -18,6 +19,7 @@ def index():
 
 
 @main_router.route("/about")
+@simple_cache.cached(timeout=60 * 60)
 def about():
     return render_template("about.html", title="Про нас")
 

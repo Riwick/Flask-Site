@@ -7,6 +7,7 @@ from src.admin.components.products.queries import AdminProductsQueries
 from src.admin.utils import check_current_user
 from src.products.utils import get_pagination
 from src.utils import get_paginated_staff, PER_PAGE
+from src.caching import delete_all_product_cache, cache
 
 admin_product_router = Blueprint("admin_product_router", __name__)
 
@@ -32,6 +33,7 @@ def delete_product(product_id: int):
         detail, status = AdminProductsQueries.delete_product(product_id)
         if status:
             flash(detail, category="success")
+            delete_all_product_cache(product_id)
             return redirect(request.referrer)
         else:
             flash(detail, category="error")
@@ -48,6 +50,9 @@ def add_product():
                                                               request.form["cat_name"], request.files["image"])
             if status:
                 flash(detail, category="success")
+                cache.delete("products")
+                cache.delete("admin-3_last_products_for_main_page")
+                cache.delete("admin-products")
             else:
                 flash(detail, category="error")
 
@@ -68,6 +73,7 @@ def update_product(product_id: int):
                                                                  request.form["cat_name"], request.files["image"])
             if status:
                 flash(detail, category="success")
+                delete_all_product_cache(product_id)
             else:
                 flash(detail, category="error")
 

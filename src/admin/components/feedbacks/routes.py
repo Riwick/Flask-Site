@@ -6,6 +6,7 @@ from src.admin.components.feedbacks.queries import AdminFeedbacksQueries
 from src.admin.utils import check_current_user
 from src.products.utils import get_pagination
 from src.utils import get_paginated_staff, PER_PAGE
+from src.caching import delete_all_feedback_cache
 
 admin_feedbacks_router = Blueprint("admin_feedbacks_router", __name__)
 
@@ -41,6 +42,7 @@ def delete_feedback(feedback_id: int):
         detail, status = AdminFeedbacksQueries.delete_feedback(feedback_id)
         if status:
             flash(detail, category="success")
+            delete_all_feedback_cache(feedback_id)
             return redirect(request.referrer)
         else:
             flash(detail, category="error")

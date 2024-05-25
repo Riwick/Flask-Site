@@ -13,6 +13,7 @@ from src.users.users_utils import UserLogin, USER_UPLOAD_FOLDER
 from src.database import db
 from src.config import SECRET_KEY, DB_NAME, DB_PORT, DB_HOST, DB_PASS, DB_USER
 from src.products.utils import PRODUCTS_UPLOAD_FOLDER
+from src.caching import simple_cache
 
 app = Flask(__name__, template_folder="src/templates/")
 
@@ -38,6 +39,8 @@ login_manager.login_view = "route.login"
 login_manager.login_message = "Войдите в аккаунт для доступа к закрытым страницам"
 login_manager.login_message_category = "success"
 
+
+simple_cache.init_app(app)
 
 db.init_app(app)
 migrate = Migrate(app, db)
