@@ -35,7 +35,7 @@ app.config["USER_UPLOAD_FOLDER"] = USER_UPLOAD_FOLDER
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "route.login"
+login_manager.login_view = "users_router.login"
 login_manager.login_message = "Войдите в аккаунт для доступа к закрытым страницам"
 login_manager.login_message_category = "success"
 
@@ -71,12 +71,6 @@ def uploaded_user_file(filename):
 @login_manager.user_loader
 def load_user(user_id: int):
     return UserLogin().get_user_from_db(user_id, db)
-
-
-# @login_manager.unauthorized_handler
-# def unauthorized():
-#     flash("Войдите в аккаунт для доступа к закрытым страницам", category="success")
-#     return redirect("/login")
 
 
 if __name__ == '__main__':

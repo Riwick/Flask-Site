@@ -17,11 +17,11 @@ class AdminProductsQueries:
         try:
             if cache.get("admin-3_last_products_for_main_page"):
                 return cache.get("admin-3_last_products_for_main_page")
-            query = (
-                select(Product).order_by(Product.created_at.desc()).limit(3)
-            )
+            query = select(Product).order_by(Product.created_at.desc()).limit(3)
             products = db.session.execute(query).scalars().all()
-            cache.set("admin-3_last_products_for_main_page", products, PRODUCTS_CACHE_TIME)
+            cache.set(
+                "admin-3_last_products_for_main_page", products, PRODUCTS_CACHE_TIME
+            )
             return products
         except Exception as e:
             print(e)
@@ -31,9 +31,7 @@ class AdminProductsQueries:
         try:
             if cache.get("admin-products"):
                 return cache.get("admin-products")
-            query = (
-                select(Product).order_by(Product.created_at.desc())
-            )
+            query = select(Product).order_by(Product.created_at.desc())
 
             products = db.session.execute(query).scalars().all()
             cache.set("admin-products", products, PRODUCTS_CACHE_TIME)
@@ -46,9 +44,7 @@ class AdminProductsQueries:
         try:
             if cache.get(f"product {product_id}"):
                 return cache.get(f"product {product_id}")
-            query = (
-                select(Product).filter(Product.product_id == product_id)
-            )
+            query = select(Product).filter(Product.product_id == product_id)
             product = db.session.execute(query).scalars().one_or_none()
             cache.set(f"product {product_id}", product, PRODUCTS_CACHE_TIME)
             return product
@@ -60,9 +56,7 @@ class AdminProductsQueries:
         try:
             product = AdminProductsQueries.get_one_product_by_id(product_id)
             if product:
-                stmt = (
-                    delete(Product).filter(Product.product_id == product_id)
-                )
+                stmt = delete(Product).filter(Product.product_id == product_id)
                 db.session.execute(stmt)
                 db.session.commit()
                 return "Успешно удалено", True
@@ -89,12 +83,15 @@ class AdminProductsQueries:
                     if product.title == title:
                         return "Такой продукт уже существует", False
 
-                my_decimal = Decimal(str(price)).quantize(Decimal('0.01'))
+                my_decimal = Decimal(str(price)).quantize(Decimal("0.01"))
 
-                stmt = (
-                    insert(Product).values(title=title, short_description=short_desc,
-                                           description=desc, price=my_decimal, category_title=cat_name,
-                                           image=image.filename)
+                stmt = insert(Product).values(
+                    title=title,
+                    short_description=short_desc,
+                    description=desc,
+                    price=my_decimal,
+                    category_title=cat_name,
+                    image=image.filename,
                 )
                 db.session.execute(stmt)
                 db.session.commit()
@@ -115,14 +112,19 @@ class AdminProductsQueries:
                 return "Такого продукта не существует", False
 
             product_image = deepcopy(product.image)
-            my_decimal = Decimal(str(price)).quantize(Decimal('0.01'))
+            my_decimal = Decimal(str(price)).quantize(Decimal("0.01"))
 
             if not image or image.filename == "":
                 stmt = (
-                    update(Product).filter(Product.product_id == product_id).values(title=title,
-                                                                                    short_description=short_desc,
-                                                                                    description=desc, price=my_decimal,
-                                                                                    category_title=cat_name)
+                    update(Product)
+                    .filter(Product.product_id == product_id)
+                    .values(
+                        title=title,
+                        short_description=short_desc,
+                        description=desc,
+                        price=my_decimal,
+                        category_title=cat_name,
+                    )
                 )
                 db.session.execute(stmt)
                 db.session.commit()
@@ -131,11 +133,16 @@ class AdminProductsQueries:
 
             if image and allowed_file(image.filename):
                 stmt = (
-                    update(Product).filter(Product.product_id == product_id).values(title=title,
-                                                                                    short_description=short_desc,
-                                                                                    description=desc, price=my_decimal,
-                                                                                    category_title=cat_name,
-                                                                                    image=image.filename)
+                    update(Product)
+                    .filter(Product.product_id == product_id)
+                    .values(
+                        title=title,
+                        short_description=short_desc,
+                        description=desc,
+                        price=my_decimal,
+                        category_title=cat_name,
+                        image=image.filename,
+                    )
                 )
                 db.session.execute(stmt)
                 db.session.commit()

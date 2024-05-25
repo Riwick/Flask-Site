@@ -18,10 +18,15 @@ def all_feedbacks():
         feedbacks = AdminFeedbacksQueries.get_all_feedbacks()
 
         page = request.args.get(get_page_parameter(), type=int, default=1)
-        paginated_feedbacks = get_paginated_staff(page=page, staff=feedbacks, per_page=PER_PAGE)
-        return render_template("admin/feedbacks/feedbacks.html", feedbacks=paginated_feedbacks,
-                               title="Обращения", pagination=get_pagination(page=page, per_page=PER_PAGE,
-                                                                            total=feedbacks))
+        paginated_feedbacks = get_paginated_staff(
+            page=page, staff=feedbacks, per_page=PER_PAGE
+        )
+        return render_template(
+            "admin/feedbacks/feedbacks.html",
+            feedbacks=paginated_feedbacks,
+            title="Обращения",
+            pagination=get_pagination(page=page, per_page=PER_PAGE, total=feedbacks),
+        )
     return redirect("/")
 
 
@@ -35,7 +40,9 @@ def get_one_feedback(feedback_id: int):
     return redirect("/")
 
 
-@admin_feedbacks_router.route("/feedbacks/<int:feedback_id>/delete", methods=["GET", "POST", "DELETE"])
+@admin_feedbacks_router.route(
+    "/feedbacks/<int:feedback_id>/delete", methods=["GET", "POST", "DELETE"]
+)
 @login_required
 def delete_feedback(feedback_id: int):
     if check_current_user():

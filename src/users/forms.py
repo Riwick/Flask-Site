@@ -16,7 +16,12 @@ class RegisterForm(FlaskForm):
     email = StringField(validators=[DataRequired(), Email()])
     phone = TelField(validators=[DataRequired(), Length(min=1, max=30)])
     password = PasswordField(validators=[DataRequired(), Length(min=1, max=200)])
-    password_confirm = PasswordField(validators=[DataRequired(), Length(min=1, max=200),
-                                                 EqualTo("password", message="Пароли не совпадают")])
+    password_confirm = PasswordField(
+        validators=[
+            DataRequired(),
+            Length(min=1, max=200),
+            EqualTo("password", message="Пароли не совпадают"),
+        ]
+    )
 
     submit = SubmitField()

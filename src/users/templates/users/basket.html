@@ -38,7 +38,7 @@
               <div class="card shadow-sm">
                 <a href="/products/{{ product.product_id }}"><img src="{{ url_for('uploaded_product_file', filename=product.image) }}" height="300px;" width="98%;" style="margin: 1%;  border-radius: 5px;"></a>
                 <div class="card-body">
-                  <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.product_id }}</a>
+                  <a href="/products/{{ product.product_id }}/" class="card-text btn btn-warning shadow-sm" style="font-size: 20px; margin-bottom: 10px;">{{ product.title }}</a>
                   <p class="card-text" >{{ product.short_description }}</p>
                   <a href="/products/{{ product.product_id }}" class="btn btn-warning card shadow-sm" style="font-size: 26px;">{{ product.price }} руб.</a>
                   <a href="/users/basket/{{ current_user.get_id() }}/{{ product.product_id }}/delete" class="btn btn-danger shadow-sm" style="margin-top: 10px;">Удалить из корзины</a>

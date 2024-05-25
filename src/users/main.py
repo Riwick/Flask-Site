@@ -5,9 +5,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from src.users.users_queries import UserQueries
 from src.users.users_utils import UserLogin, get_total_basket_sum
 from src.users.forms import LoginForm, RegisterForm
-from src.caching import cache, delete_all_user_cache, delete_all_user_cache_without_id, delete_all_basket_cache
+from src.caching import (
+    delete_all_user_cache,
+    delete_all_user_cache_without_id,
+    delete_all_basket_cache,
+)
 
-user_router = Blueprint("users_router", __name__, template_folder="templates", static_folder="static")
+user_router = Blueprint(
+    "users_router", __name__, template_folder="templates", static_folder="static"
+)
 
 
 @user_router.route("/login", methods=["GET", "POST"])
@@ -39,9 +45,9 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data)
-        db_detail, db_status = UserQueries.create_user_query(form.username.data, hashed_password,
-                                                             form.email.data,
-                                                             form.phone.data)
+        db_detail, db_status = UserQueries.create_user_query(
+            form.username.data, hashed_password, form.email.data, form.phone.data
+        )
         if db_status:
             flash(db_detail, category="success")
             delete_all_user_cache_without_id()
@@ -56,18 +62,25 @@ def register():
 @login_required
 def profile():
     if request.method == "POST":
-        detail, status = UserQueries.update_profile_query(request.files.get("image"), request.form.get("name"),
-                                                          request.form.get("surname"), request.form.get("username"),
-                                                          request.form.get("address"),
-                                                          request.form.get("additional_address"),
-                                                          request.form.get("country"), current_user.get_id())
+        detail, status = UserQueries.update_profile_query(
+            request.files.get("image"),
+            request.form.get("name"),
+            request.form.get("surname"),
+            request.form.get("username"),
+            request.form.get("address"),
+            request.form.get("additional_address"),
+            request.form.get("country"),
+            current_user.get_id(),
+        )
         if status:
             flash(detail, category="success")
             delete_all_user_cache(current_user.get_id())
         else:
             flash(detail, category="error")
 
-    return render_template("users/profile.html", title=f"Профиль {current_user.get_username()}")
+    return render_template(
+        "users/profile.html", title=f"Профиль {current_user.get_username()}"
+    )
 
 
 @user_router.route("/logout")
@@ -85,7 +98,9 @@ def get_basket():
     return render_template("users/basket.html", basket=basket, total_price=total_price)
 
 
-@user_router.route("/basket/<int:user_id>/<int:product_id>/delete", methods=["POST", "DELETE", "GET"])
+@user_router.route(
+    "/basket/<int:user_id>/<int:product_id>/delete", methods=["POST", "DELETE", "GET"]
+)
 @login_required
 def delete_product_from_basket(user_id: int, product_id: int):
     detail, result = UserQueries.delete_product_from_basket_query(user_id, product_id)

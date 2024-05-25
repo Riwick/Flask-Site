@@ -10,24 +10,70 @@ def check_current_user():
     return False
 
 
-def update_profile_image_stmt(image, name, surname, username, address, additional_address, country, user_id,
-                              address_conf, email_conf, phone_conf, is_staff, is_superuser):
+def update_profile_image_stmt(
+    image,
+    name,
+    surname,
+    username,
+    address,
+    additional_address,
+    country,
+    user_id,
+    address_conf,
+    email_conf,
+    phone_conf,
+    is_staff,
+    is_superuser,
+):
     stmt = (
-        update(User).filter(User.user_id == user_id)
-        .values(user_image=image.filename, name=name, surname=surname, username=username,
-                address=address, additional_address=additional_address, country=country, address_confirmed=address_conf,
-                email_confirmed=email_conf, phone_confirmed=phone_conf)
+        update(User)
+        .filter(User.user_id == user_id)
+        .values(
+            user_image=image.filename,
+            name=name,
+            surname=surname,
+            username=username,
+            address=address,
+            additional_address=additional_address,
+            country=country,
+            address_confirmed=address_conf,
+            email_confirmed=email_conf,
+            phone_confirmed=phone_conf,
+        )
     )
     return stmt
 
 
-def update_profile_without_image_stmt(name, surname, username, address, additional_address, country, user_id,
-                                      address_conf, email_conf, phone_conf, is_staff, is_superuser):
+def update_profile_without_image_stmt(
+    name,
+    surname,
+    username,
+    address,
+    additional_address,
+    country,
+    user_id,
+    address_conf,
+    email_conf,
+    phone_conf,
+    is_staff,
+    is_superuser,
+):
     stmt = (
-        update(User).filter(User.user_id == user_id)
-        .values(name=name, surname=surname, username=username, address=address,
-                additional_address=additional_address, country=country, address_confirmed=address_conf,
-                email_confirmed=email_conf, phone_confirmed=phone_conf, is_staff=is_staff, is_superuser=is_superuser)
+        update(User)
+        .filter(User.user_id == user_id)
+        .values(
+            name=name,
+            surname=surname,
+            username=username,
+            address=address,
+            additional_address=additional_address,
+            country=country,
+            address_confirmed=address_conf,
+            email_confirmed=email_conf,
+            phone_confirmed=phone_conf,
+            is_staff=is_staff,
+            is_superuser=is_superuser,
+        )
     )
     return stmt
 

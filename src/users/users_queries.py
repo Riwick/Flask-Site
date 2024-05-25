@@ -7,7 +7,11 @@ from sqlalchemy.orm import selectinload
 
 from src.database import db, User, Basket
 from src.utils import allowed_file
-from src.users.users_utils import USER_UPLOAD_FOLDER, update_profile_image_stmt, update_profile_without_image_stmt
+from src.users.users_utils import (
+    USER_UPLOAD_FOLDER,
+    update_profile_image_stmt,
+    update_profile_without_image_stmt,
+)
 from src.caching import cache, USERS_CACHE_TIME, BASKET_CACHE_TIME
 
 
@@ -16,8 +20,8 @@ class UserQueries:
     @staticmethod
     def create_user_query(username, password, email, phone):
         try:
-            stmt = (
-                insert(User).values(username=username, email=email, phone=phone, password=password)
+            stmt = insert(User).values(
+                username=username, email=email, phone=phone, password=password
             )
             db.session.execute(stmt)
             db.session.commit()
@@ -29,14 +33,15 @@ class UserQueries:
 
         except Exception as e:
             print(e)
-            return "Во время регистрации произошла ошибка, попробуйте ещё раз позже", False
+            return (
+                "Во время регистрации произошла ошибка, попробуйте ещё раз позже",
+                False,
+            )
 
     @staticmethod
     def select_user_by_email_query(email: str):
         try:
-            query = (
-                select(User).filter(User.email == email)
-            )
+            query = select(User).filter(User.email == email)
             user = db.session.execute(query).scalars().all()
 
             if user:
@@ -54,7 +59,9 @@ class UserQueries:
             if cache.get(f"basket_products {user_id}"):
                 return cache.get(f"basket_products {user_id}")
             query = (
-                select(User).filter(User.user_id == user_id).options(selectinload(User.basket_products))
+                select(User)
+                .filter(User.user_id == user_id)
+                .options(selectinload(User.basket_products))
             )
             basket = db.session.execute(query).scalars().one_or_none()
             cache.set(f"basket_products {user_id}", basket, BASKET_CACHE_TIME)
@@ -67,9 +74,7 @@ class UserQueries:
         try:
             if cache.get(f"basket {user_id}"):
                 return cache.get(f"basket {user_id}")
-            query = (
-                select(Basket).filter(Basket.user_id == user_id)
-            )
+            query = select(Basket).filter(Basket.user_id == user_id)
             basket = db.session.execute(query).scalars().all()
             cache.set(f"basket {user_id}", basket, BASKET_CACHE_TIME)
             return basket
@@ -79,8 +84,8 @@ class UserQueries:
     @staticmethod
     def delete_product_from_basket_query(user_id, product_id):
         try:
-            query = (
-                select(Basket).filter(and_(Basket.user_id == user_id, Basket.product_id == product_id))
+            query = select(Basket).filter(
+                and_(Basket.user_id == user_id, Basket.product_id == product_id)
             )
 
             product = db.session.execute(query).scalars().all()
@@ -88,8 +93,8 @@ class UserQueries:
             if not product:
                 return "Вы ещё не добавили этот продукт в корзину", False
 
-            stmt = (
-                delete(Basket).filter(and_(Basket.user_id == user_id, Basket.product_id == product_id))
+            stmt = delete(Basket).filter(
+                and_(Basket.user_id == user_id, Basket.product_id == product_id)
             )
             db.session.execute(stmt)
             db.session.commit()
@@ -101,16 +106,17 @@ class UserQueries:
     @staticmethod
     def add_product_to_basket_query(product_id, user_id):
         try:
-            query = (
-                select(Basket).filter(and_(Basket.user_id == user_id, Basket.product_id == product_id))
+            query = select(Basket).filter(
+                and_(Basket.user_id == user_id, Basket.product_id == product_id)
             )
 
             product = db.session.execute(query).scalars().all()
             if product:
-                return "Этот продукт уже в вашей корзине, просто загляните туда :)", False
-            stmt = (
-                insert(Basket).values(user_id=user_id, product_id=product_id)
-            )
+                return (
+                    "Этот продукт уже в вашей корзине, просто загляните туда :)",
+                    False,
+                )
+            stmt = insert(Basket).values(user_id=user_id, product_id=product_id)
             db.session.execute(stmt)
             db.session.commit()
             return "Добавлено", True
@@ -123,9 +129,7 @@ class UserQueries:
         try:
             if cache.get(f"user {user_id}"):
                 return cache.get(f"user {user_id}")
-            query = (
-                select(User).filter(User.user_id == user_id)
-            )
+            query = select(User).filter(User.user_id == user_id)
             user = db.session.execute(query).scalars().one_or_none()
             cache.set(f"user {user_id}", user, USERS_CACHE_TIME)
             return user
@@ -133,15 +137,24 @@ class UserQueries:
             print(e)
 
     @staticmethod
-    def update_profile_query(image, name, surname, username, address, additional_address, country, user_id):
+    def update_profile_query(
+        image, name, surname, username, address, additional_address, country, user_id
+    ):
         try:
             user = UserQueries.get_user_by_id(user_id)
             last_user_image = deepcopy(user.user_image)
             if user:
                 if last_user_image == image.filename or not image:
                     try:
-                        stmt = update_profile_without_image_stmt(name, surname, username, address,
-                                                                 additional_address, country, user_id)
+                        stmt = update_profile_without_image_stmt(
+                            name,
+                            surname,
+                            username,
+                            address,
+                            additional_address,
+                            country,
+                            user_id,
+                        )
                         db.session.execute(stmt)
                         db.session.commit()
                         return "Профиль обновлен", True
@@ -151,8 +164,16 @@ class UserQueries:
 
                 if image and allowed_file(image.filename):
                     try:
-                        stmt = update_profile_image_stmt(image, name, surname, username, address,
-                                                         additional_address, country, user_id)
+                        stmt = update_profile_image_stmt(
+                            image,
+                            name,
+                            surname,
+                            username,
+                            address,
+                            additional_address,
+                            country,
+                            user_id,
+                        )
                         db.session.execute(stmt)
                         db.session.commit()
                     except Exception as e:
@@ -164,7 +185,10 @@ class UserQueries:
 
                     return "Профиль обновлен", True
                 else:
-                    return "Выбранная вами фотография не может быть использована в качестве аватара", False
+                    return (
+                        "Выбранная вами фотография не может быть использована в качестве аватара",
+                        False,
+                    )
             else:
                 return "Профиля такого пользователя не существует", False
 

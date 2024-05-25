@@ -12,9 +12,7 @@ class ProductQueries:
             if cache.get("all_products"):
                 return cache.get("all_products")
 
-            query = (
-                select(Product)
-            )
+            query = select(Product)
 
             products = db.session.execute(query).scalars().all()
             cache.set("all_products", products, 120)
@@ -27,9 +25,7 @@ class ProductQueries:
         try:
             if cache.get(f"product {product_id}"):
                 return cache.get(f"product {product_id}")
-            query = (
-                select(Product).filter(Product.product_id == product_id)
-            )
+            query = select(Product).filter(Product.product_id == product_id)
             product = db.session.execute(query).scalars().one_or_none()
             cache.set(f"product {product_id}", product, 120)
             return product
@@ -41,9 +37,7 @@ class ProductQueries:
         try:
             if cache.get("categories"):
                 return cache.get("categories")
-            query = (
-                select(Category).order_by(Category.title)
-            )
+            query = select(Category).order_by(Category.title)
             categories = db.session.execute(query).scalars().all()
             cache.set("categories", categories, 120)
             return categories
@@ -53,11 +47,8 @@ class ProductQueries:
     @staticmethod
     def get_products_by_category(category_title):
         try:
-            query = (
-                select(Product).filter(Product.category_title == category_title)
-            )
+            query = select(Product).filter(Product.category_title == category_title)
             products = db.session.execute(query).scalars().all()
             return products
         except Exception as e:
             print(e)
-

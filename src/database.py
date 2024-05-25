@@ -28,7 +28,9 @@ db = SQLAlchemy(model_class=Base, engine_options={"echo": True})
 integer_pk = Annotated[int, mapped_column(primary_key=True)]
 not_nullable_int = Annotated[int, mapped_column(nullable=False)]
 
-created_at = Annotated[datetime.datetime, mapped_column(default=datetime.datetime.utcnow)]
+created_at = Annotated[
+    datetime.datetime, mapped_column(default=datetime.datetime.utcnow)
+]
 
 not_nullable_str = Annotated[str, mapped_column(String(200), nullable=False)]
 nullable_str = Annotated[str, mapped_column(String(200), nullable=True, default="")]
@@ -45,7 +47,9 @@ class Category(db.Model):
 
 class Product(db.Model):
     product_id: Mapped[integer_pk]
-    title: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    title: Mapped[str] = mapped_column(
+        String(50), unique=True, nullable=False, index=True
+    )
     short_description: Mapped[str] = mapped_column(String(255), nullable=True)
     image: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
@@ -53,12 +57,13 @@ class Product(db.Model):
     price: Mapped[Decimal] = mapped_column(nullable=False)
     count: Mapped[int] = mapped_column(default=0, nullable=True)
 
-    category_title: Mapped[str] = mapped_column(ForeignKey("category.title", ondelete="SET NULL"), nullable=True)
+    category_title: Mapped[str] = mapped_column(
+        ForeignKey("category.title", ondelete="SET NULL"), nullable=True
+    )
     created_at: Mapped[created_at]
 
     in_basket: Mapped[list["User"]] = relationship(
-        back_populates="basket_products",
-        secondary="basket"
+        back_populates="basket_products", secondary="basket"
     )
 
     repr_cols = ("description", "price", "category_title")
@@ -95,25 +100,39 @@ class User(db.Model):
     additional_address: Mapped[nullable_str]
     address_confirmed: Mapped[is_confirmed]
 
-    country: Mapped["Country"] = mapped_column(nullable=True, default="country.Not_specified")
+    country: Mapped["Country"] = mapped_column(
+        nullable=True, default="country.Not_specified"
+    )
 
     password: Mapped[not_nullable_str]
 
-    user_image: Mapped[str] = mapped_column(default="default_user_avatar.jpg", nullable=False)
+    user_image: Mapped[str] = mapped_column(
+        default="default_user_avatar.jpg", nullable=False
+    )
     register_at: Mapped[created_at]
 
     is_staff: Mapped[is_staff]
     is_superuser: Mapped[is_staff]
 
     basket_products: Mapped[list["Product"]] = relationship(
-        back_populates="in_basket",
-        secondary="basket"
+        back_populates="in_basket", secondary="basket"
     )
 
-    repr_cols = ("password", "register_at", "user_image", "phone", "name", "surname", "address")
+    repr_cols = (
+        "password",
+        "register_at",
+        "user_image",
+        "phone",
+        "name",
+        "surname",
+        "address",
+    )
 
 
 class Basket(db.Model):
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id", ondelete="CASCADE"), primary_key=True)
-    product_id: Mapped[int] = mapped_column(ForeignKey("product.product_id", ondelete="CASCADE"), primary_key=True)
-
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user.user_id", ondelete="CASCADE"), primary_key=True
+    )
+    product_id: Mapped[int] = mapped_column(
+        ForeignKey("product.product_id", ondelete="CASCADE"), primary_key=True
+    )

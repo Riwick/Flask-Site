@@ -11,9 +11,7 @@ class UserLogin(UserMixin):
     __user = None
 
     def get_user_from_db(self, user_id, db):
-        query = (
-            select(User).filter(User.user_id == user_id)
-        )
+        query = select(User).filter(User.user_id == user_id)
         self.__user = db.session.execute(query).scalars().one_or_none()
         return self
 
@@ -58,20 +56,39 @@ class UserLogin(UserMixin):
         return str(self.__user.country).rsplit(".", 1)[1]
 
 
-def update_profile_image_stmt(image, name, surname, username, address, additional_address, country, user_id):
+def update_profile_image_stmt(
+    image, name, surname, username, address, additional_address, country, user_id
+):
     stmt = (
-        update(User).filter(User.user_id == user_id)
-        .values(user_image=image.filename, name=name, surname=surname, username=username,
-                address=address, additional_address=additional_address, country=country)
+        update(User)
+        .filter(User.user_id == user_id)
+        .values(
+            user_image=image.filename,
+            name=name,
+            surname=surname,
+            username=username,
+            address=address,
+            additional_address=additional_address,
+            country=country,
+        )
     )
     return stmt
 
 
-def update_profile_without_image_stmt(name, surname, username, address, additional_address, country, user_id):
+def update_profile_without_image_stmt(
+    name, surname, username, address, additional_address, country, user_id
+):
     stmt = (
-        update(User).filter(User.user_id == user_id)
-        .values(name=name, surname=surname, username=username, address=address,
-                additional_address=additional_address, country=country)
+        update(User)
+        .filter(User.user_id == user_id)
+        .values(
+            name=name,
+            surname=surname,
+            username=username,
+            address=address,
+            additional_address=additional_address,
+            country=country,
+        )
     )
     return stmt
 

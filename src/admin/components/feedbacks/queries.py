@@ -11,11 +11,11 @@ class AdminFeedbacksQueries:
         try:
             if cache.get("admin-3_last_feedbacks_for_main_page"):
                 return cache.get("admin-3_last_feedbacks_for_main_page")
-            query = (
-                select(Feedback).order_by(Feedback.feedback_id.desc()).limit(3)
-            )
+            query = select(Feedback).order_by(Feedback.feedback_id.desc()).limit(3)
             feedbacks = db.session.execute(query).scalars().all()
-            cache.set("admin-3_last_feedbacks_for_main_page", feedbacks, FEEDBACKS_CACHE_TIME)
+            cache.set(
+                "admin-3_last_feedbacks_for_main_page", feedbacks, FEEDBACKS_CACHE_TIME
+            )
             return feedbacks
         except Exception as e:
             print(e)
@@ -25,9 +25,7 @@ class AdminFeedbacksQueries:
         try:
             if cache.get("admin-feedbacks"):
                 return cache.get("admin-feedbacks")
-            query = (
-                select(Feedback).order_by(Feedback.feedback_id.desc())
-            )
+            query = select(Feedback).order_by(Feedback.feedback_id.desc())
 
             feedbacks = db.session.execute(query).scalars().all()
             cache.set("admin-feedbacks", feedbacks, FEEDBACKS_CACHE_TIME)
@@ -40,9 +38,7 @@ class AdminFeedbacksQueries:
         try:
             if cache.get(f"feedback {feedback_id}"):
                 return cache.get(f"feedback {feedback_id}")
-            query = (
-                select(Feedback).filter(Feedback.feedback_id == feedback_id)
-            )
+            query = select(Feedback).filter(Feedback.feedback_id == feedback_id)
             fb = db.session.execute(query).scalars().one_or_none()
             cache.set(f"feedback {feedback_id}", fb, FEEDBACKS_CACHE_TIME)
             return fb
@@ -55,9 +51,7 @@ class AdminFeedbacksQueries:
             fb = AdminFeedbacksQueries.get_one_feedback_by_id(feedback_id)
 
             if fb:
-                stmt = (
-                    delete(Feedback).filter(Feedback.feedback_id == feedback_id)
-                )
+                stmt = delete(Feedback).filter(Feedback.feedback_id == feedback_id)
                 db.session.execute(stmt)
                 db.session.commit()
                 return "Успешно удалено", True

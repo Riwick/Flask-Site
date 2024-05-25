@@ -19,14 +19,21 @@ def all_products():
         products = AdminProductsQueries.get_all_products()
 
         page = request.args.get(get_page_parameter(), type=int, default=1)
-        paginated_products = get_paginated_staff(page=page, staff=products, per_page=PER_PAGE)
-        return render_template("admin/products/products.html", products=paginated_products,
-                               title="Продукты", pagination=get_pagination(page=page, per_page=PER_PAGE,
-                                                                           total=products))
+        paginated_products = get_paginated_staff(
+            page=page, staff=products, per_page=PER_PAGE
+        )
+        return render_template(
+            "admin/products/products.html",
+            products=paginated_products,
+            title="Продукты",
+            pagination=get_pagination(page=page, per_page=PER_PAGE, total=products),
+        )
     return redirect("/")
 
 
-@admin_product_router.route("/products/<int:product_id>/delete", methods=["GET", "POST", "DELETE"])
+@admin_product_router.route(
+    "/products/<int:product_id>/delete", methods=["GET", "POST", "DELETE"]
+)
 @login_required
 def delete_product(product_id: int):
     if check_current_user():
@@ -45,9 +52,14 @@ def delete_product(product_id: int):
 def add_product():
     if check_current_user():
         if request.method == "POST":
-            detail, status = AdminProductsQueries.add_product(request.form["title"], request.form["short_desc"],
-                                                              request.form["desc"], request.form["price"],
-                                                              request.form["cat_name"], request.files["image"])
+            detail, status = AdminProductsQueries.add_product(
+                request.form["title"],
+                request.form["short_desc"],
+                request.form["desc"],
+                request.form["price"],
+                request.form["cat_name"],
+                request.files["image"],
+            )
             if status:
                 flash(detail, category="success")
                 cache.delete("products")
@@ -62,15 +74,22 @@ def add_product():
     return redirect("/")
 
 
-@admin_product_router.route("/products/<int:product_id>", methods=["GET", "POST", "PUT"])
+@admin_product_router.route(
+    "/products/<int:product_id>", methods=["GET", "POST", "PUT"]
+)
 @login_required
 def update_product(product_id: int):
     if check_current_user():
         if request.method == "POST" or request.method == "PUT":
-            detail, status = AdminProductsQueries.update_product(product_id, request.form["title"],
-                                                                 request.form["short_desc"],
-                                                                 request.form["desc"], request.form["price"],
-                                                                 request.form["cat_name"], request.files["image"])
+            detail, status = AdminProductsQueries.update_product(
+                product_id,
+                request.form["title"],
+                request.form["short_desc"],
+                request.form["desc"],
+                request.form["price"],
+                request.form["cat_name"],
+                request.files["image"],
+            )
             if status:
                 flash(detail, category="success")
                 delete_all_product_cache(product_id)
@@ -80,7 +99,11 @@ def update_product(product_id: int):
         categories = AdminCategoriesQueries.get_all_categories()
         product = AdminProductsQueries.get_one_product_by_id(product_id)
 
-        return render_template("admin/products/products-detail.html", categories=categories,
-                               product=product, title=f"Обновление продукта - {product.title}")
+        return render_template(
+            "admin/products/products-detail.html",
+            categories=categories,
+            product=product,
+            title=f"Обновление продукта - {product.title}",
+        )
 
     return redirect("/")

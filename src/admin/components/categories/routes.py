@@ -18,14 +18,21 @@ def get_all_categories():
         categories = AdminCategoriesQueries.get_all_categories()
 
         page = request.args.get(get_page_parameter(), type=int, default=1)
-        paginated_categories = get_paginated_staff(page=page, staff=categories, per_page=PER_PAGE)
-        return render_template("admin/categories/categories.html", categories=paginated_categories,
-                               pagination=get_pagination(page=page, per_page=PER_PAGE, total=categories),
-                               title="Категории")
+        paginated_categories = get_paginated_staff(
+            page=page, staff=categories, per_page=PER_PAGE
+        )
+        return render_template(
+            "admin/categories/categories.html",
+            categories=paginated_categories,
+            pagination=get_pagination(page=page, per_page=PER_PAGE, total=categories),
+            title="Категории",
+        )
     return redirect("/")
 
 
-@admin_categories_router.route("/categories/<int:category_id>/delete", methods=["GET", "POST"])
+@admin_categories_router.route(
+    "/categories/<int:category_id>/delete", methods=["GET", "POST"]
+)
 @login_required
 def delete_category(category_id: int):
     if check_current_user():
@@ -45,7 +52,9 @@ def delete_category(category_id: int):
 def add_category():
     if check_current_user():
         if request.method == "POST":
-            detail, status = AdminCategoriesQueries.add_category(request.form["title"], request.form["short_desc"])
+            detail, status = AdminCategoriesQueries.add_category(
+                request.form["title"], request.form["short_desc"]
+            )
             if status:
                 flash(detail, category="success")
                 cache.delete("categories")
@@ -53,18 +62,23 @@ def add_category():
             else:
                 flash(detail, category="error")
 
-        return render_template("admin/categories/add_category.html", title="Добавление категории")
+        return render_template(
+            "admin/categories/add_category.html", title="Добавление категории"
+        )
 
     return redirect("/")
 
 
-@admin_categories_router.route("/categories/<int:category_id>", methods=["GET", "POST", "PUT"])
+@admin_categories_router.route(
+    "/categories/<int:category_id>", methods=["GET", "POST", "PUT"]
+)
 @login_required
 def update_category(category_id: int):
     if check_current_user():
         if request.method == "POST" or request.method == "PUT":
-            detail, status = AdminCategoriesQueries.update_category(category_id, request.form["title"],
-                                                                    request.form["short_desc"])
+            detail, status = AdminCategoriesQueries.update_category(
+                category_id, request.form["title"], request.form["short_desc"]
+            )
             if status:
                 flash(detail, category="success")
                 delete_all_categories_cache(category_id)
@@ -73,7 +87,10 @@ def update_category(category_id: int):
 
         category = AdminCategoriesQueries.get_one_category_by_id(category_id)
 
-        return render_template("admin/categories/categories-detail.html", category=category,
-                               title="Обновление категории")
+        return render_template(
+            "admin/categories/categories-detail.html",
+            category=category,
+            title="Обновление категории",
+        )
 
     return redirect("/")
