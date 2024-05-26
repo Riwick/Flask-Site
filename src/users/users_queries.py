@@ -5,14 +5,14 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import insert, select, delete, and_
 from sqlalchemy.orm import selectinload
 
-from src.database import db, User, Basket
+from src.database import db, User, Basket, Favorite
 from src.utils import allowed_file
 from src.users.users_utils import (
     USER_UPLOAD_FOLDER,
     update_profile_image_stmt,
     update_profile_without_image_stmt,
 )
-from src.caching import cache, USERS_CACHE_TIME, BASKET_CACHE_TIME
+from src.caching import cache, USERS_CACHE_TIME, BASKET_CACHE_TIME, FAVORITES_CACHE_TIME
 
 
 class UserQueries:
@@ -52,77 +52,6 @@ class UserQueries:
         except Exception as e:
             print(e)
             return None, False
-
-    @staticmethod
-    def get_basket_products_query(user_id):
-        try:
-            if cache.get(f"basket_products {user_id}"):
-                return cache.get(f"basket_products {user_id}")
-            query = (
-                select(User)
-                .filter(User.user_id == user_id)
-                .options(selectinload(User.basket_products))
-            )
-            basket = db.session.execute(query).scalars().one_or_none()
-            cache.set(f"basket_products {user_id}", basket, BASKET_CACHE_TIME)
-            return basket
-        except Exception as e:
-            print(e)
-
-    @staticmethod
-    def get_basket_query(user_id):
-        try:
-            if cache.get(f"basket {user_id}"):
-                return cache.get(f"basket {user_id}")
-            query = select(Basket).filter(Basket.user_id == user_id)
-            basket = db.session.execute(query).scalars().all()
-            cache.set(f"basket {user_id}", basket, BASKET_CACHE_TIME)
-            return basket
-        except Exception as e:
-            print(e)
-
-    @staticmethod
-    def delete_product_from_basket_query(user_id, product_id):
-        try:
-            query = select(Basket).filter(
-                and_(Basket.user_id == user_id, Basket.product_id == product_id)
-            )
-
-            product = db.session.execute(query).scalars().all()
-
-            if not product:
-                return "Вы ещё не добавили этот продукт в корзину", False
-
-            stmt = delete(Basket).filter(
-                and_(Basket.user_id == user_id, Basket.product_id == product_id)
-            )
-            db.session.execute(stmt)
-            db.session.commit()
-            return "Успешно удалено", True
-        except Exception as e:
-            print(e)
-            return "Ошибка при удалении продукта из корзины", False
-
-    @staticmethod
-    def add_product_to_basket_query(product_id, user_id):
-        try:
-            query = select(Basket).filter(
-                and_(Basket.user_id == user_id, Basket.product_id == product_id)
-            )
-
-            product = db.session.execute(query).scalars().all()
-            if product:
-                return (
-                    "Этот продукт уже в вашей корзине, просто загляните туда :)",
-                    False,
-                )
-            stmt = insert(Basket).values(user_id=user_id, product_id=product_id)
-            db.session.execute(stmt)
-            db.session.commit()
-            return "Добавлено", True
-        except Exception as e:
-            print(e)
-            return "Ошибка при добавлении продукта в корзину", False
 
     @staticmethod
     def get_user_by_id(user_id):
@@ -195,3 +124,151 @@ class UserQueries:
         except Exception as e:
             print(e)
             return "Во время обновления профиля произошла ошибка", False
+
+
+class UserBasketQueries:
+
+    @staticmethod
+    def get_basket_products_query(user_id):
+        try:
+            if cache.get(f"basket_products {user_id}"):
+                return cache.get(f"basket_products {user_id}")
+            query = (
+                select(User)
+                .filter(User.user_id == user_id)
+                .options(selectinload(User.basket_products))
+            )
+            basket = db.session.execute(query).scalars().one_or_none()
+            cache.set(f"basket_products {user_id}", basket, BASKET_CACHE_TIME)
+            return basket
+        except Exception as e:
+            print(e)
+
+    @staticmethod
+    def get_basket_query(user_id):
+        try:
+            if cache.get(f"basket {user_id}"):
+                return cache.get(f"basket {user_id}")
+            query = select(Basket).filter(Basket.user_id == user_id)
+            basket = db.session.execute(query).scalars().all()
+            cache.set(f"basket {user_id}", basket, BASKET_CACHE_TIME)
+            return basket
+        except Exception as e:
+            print(e)
+
+    @staticmethod
+    def delete_product_from_basket_query(user_id, product_id):
+        try:
+            query = select(Basket).filter(
+                and_(Basket.user_id == user_id, Basket.product_id == product_id)
+            )
+
+            product = db.session.execute(query).scalars().all()
+
+            if not product:
+                return "Вы ещё не добавили этот продукт в корзину", False
+
+            stmt = delete(Basket).filter(
+                and_(Basket.user_id == user_id, Basket.product_id == product_id)
+            )
+            db.session.execute(stmt)
+            db.session.commit()
+            return "Успешно удалено", True
+        except Exception as e:
+            print(e)
+            return "Ошибка при удалении продукта из корзины", False
+
+    @staticmethod
+    def add_product_to_basket_query(product_id, user_id):
+        try:
+            query = select(Basket).filter(
+                and_(Basket.user_id == user_id, Basket.product_id == product_id)
+            )
+
+            product = db.session.execute(query).scalars().all()
+            if product:
+                return (
+                    "Этот продукт уже в вашей корзине, просто загляните туда :)",
+                    False,
+                )
+            stmt = insert(Basket).values(user_id=user_id, product_id=product_id)
+            db.session.execute(stmt)
+            db.session.commit()
+            return "Добавлено", True
+        except Exception as e:
+            print(e)
+            return "Ошибка при добавлении продукта в корзину", False
+
+
+class UserFavoritesQuery:
+
+    @staticmethod
+    def get_favorites_products_query(user_id):
+        try:
+            if cache.get(f"favorites_products {user_id}"):
+                return cache.get(f"favorites_products {user_id}")
+            query = (
+                select(User)
+                .filter(User.user_id == user_id)
+                .options(selectinload(User.favorites_products))
+            )
+            fv = db.session.execute(query).scalars().one_or_none()
+            cache.set(f"favorites_products {user_id}", fv, FAVORITES_CACHE_TIME)
+            return fv
+        except Exception as e:
+            print(e)
+
+    @staticmethod
+    def get_favorites_query(user_id):
+        try:
+            if cache.get(f"favorites {user_id}"):
+                return cache.get(f"favorites {user_id}")
+            query = select(Favorite).filter(Favorite.user_id == user_id)
+            fv = db.session.execute(query).scalars().all()
+            cache.set(f"favorites {user_id}", fv, FAVORITES_CACHE_TIME)
+            return fv
+        except Exception as e:
+            print(e)
+
+    @staticmethod
+    def delete_product_from_favorites_query(user_id, product_id):
+        try:
+            query = select(Favorite).filter(
+                and_(Favorite.user_id == user_id, Favorite.product_id == product_id)
+            )
+
+            product = db.session.execute(query).scalars().all()
+
+            if not product:
+                return "Вы ещё не добавили этот продукт в избранное", False
+
+            stmt = delete(Favorite).filter(
+                and_(Favorite.user_id == user_id, Favorite.product_id == product_id)
+            )
+            db.session.execute(stmt)
+            db.session.commit()
+            return "Успешно удалено", True
+        except Exception as e:
+            print(e)
+            return "Ошибка при удалении продукта из избранного", False
+
+    @staticmethod
+    def add_product_to_favorites_query(product_id, user_id):
+        try:
+            query = select(Favorite).filter(
+                and_(Favorite.user_id == user_id, Favorite.product_id == product_id)
+            )
+
+            product = db.session.execute(query).scalars().all()
+            if product:
+                return (
+                    "Этот продукт уже в вашем избранном, просто загляните туда :)",
+                    False,
+                )
+            stmt = insert(Favorite).values(user_id=user_id, product_id=product_id)
+            db.session.execute(stmt)
+            db.session.commit()
+            return "Добавлено", True
+        except Exception as e:
+            print(e)
+            return "Ошибка при добавлении продукта в избранное", False

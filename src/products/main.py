@@ -3,10 +3,9 @@ from flask_login import current_user
 from flask_paginate import get_page_parameter
 
 from src.products.products_queries import ProductQueries
-from src.users.users_queries import UserQueries
+from src.users.users_queries import UserBasketQueries, UserFavoritesQuery
 from src.products.utils import get_pagination
 from src.utils import get_paginated_staff, PER_PAGE
-from src.caching import cache
 
 products_router = Blueprint(
     "products_router", __name__, template_folder="templates", static_folder="static"
@@ -23,7 +22,7 @@ def get_all_products():
     else:
         products = ProductQueries.get_all_products_query()
 
-    baskets = UserQueries.get_basket_query(current_user.get_id())
+    baskets = UserBasketQueries.get_basket_query(current_user.get_id())
     categories = ProductQueries.get_all_categories()
 
     page = request.args.get(get_page_parameter(), type=int, default=1)

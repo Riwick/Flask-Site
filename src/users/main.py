@@ -2,18 +2,23 @@ from flask import render_template, Blueprint, request, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from src.users.users_queries import UserQueries
+from src.users.users_queries import UserQueries, UserBasketQueries
 from src.users.users_utils import UserLogin, get_total_basket_sum
 from src.users.forms import LoginForm, RegisterForm
 from src.caching import (
     delete_all_user_cache,
     delete_all_user_cache_without_id,
-    delete_all_basket_cache,
+    delete_all_basket_cache
 )
+from src.users.favorites import favorites_router
+from src.users.basket import basket_router
 
 user_router = Blueprint(
     "users_router", __name__, template_folder="templates", static_folder="static"
 )
+
+user_router.register_blueprint(favorites_router)
+user_router.register_blueprint(basket_router)
 
 
 @user_router.route("/login", methods=["GET", "POST"])
@@ -88,39 +93,3 @@ def profile():
 def logout():
     logout_user()
     return redirect("/users/login")
-
-
-@user_router.route("/basket", methods=["GET"])
-@login_required
-def get_basket():
-    basket = UserQueries.get_basket_products_query(current_user.get_id())
-    total_price = get_total_basket_sum(basket)
-    return render_template("users/basket.html", basket=basket, total_price=total_price)
-
-
-@user_router.route(
-    "/basket/<int:user_id>/<int:product_id>/delete", methods=["POST", "DELETE", "GET"]
-)
-@login_required
-def delete_product_from_basket(user_id: int, product_id: int):
-    detail, result = UserQueries.delete_product_from_basket_query(user_id, product_id)
-    if result:
-        flash(detail, category="success")
-        delete_all_basket_cache(user_id)
-    else:
-        flash(detail, category="error")
-
-    return redirect("/users/basket")
-
-
-@user_router.route("/<int:product_id>/<int:user_id>/add_to_basket")
-@login_required
-def add_product_to_basket(product_id: int, user_id: int):
-    detail, result = UserQueries.add_product_to_basket_query(product_id, user_id)
-    if result:
-        flash(detail, category="success")
-        delete_all_basket_cache(user_id)
-    else:
-        flash(detail, category="error")
-
-    return redirect("/products")

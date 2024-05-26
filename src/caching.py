@@ -9,6 +9,7 @@ CATEGORIES_CACHE_TIME = 60 * 10
 FEEDBACKS_CACHE_TIME = 60 * 5
 USERS_CACHE_TIME = 60 * 2
 BASKET_CACHE_TIME = 60
+FAVORITES_CACHE_TIME = 60
 
 
 def delete_all_categories_cache(category_id):

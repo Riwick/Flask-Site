@@ -82,6 +82,7 @@ def update_category(category_id: int):
             if status:
                 flash(detail, category="success")
                 delete_all_categories_cache(category_id)
+                return redirect("/admin/categories")
             else:
                 flash(detail, category="error")
 

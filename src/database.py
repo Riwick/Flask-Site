@@ -66,6 +66,10 @@ class Product(db.Model):
         back_populates="basket_products", secondary="basket"
     )
 
+    in_favorites: Mapped[list["User"]] = relationship(
+        back_populates="favorites_products", secondary="favorite"
+    )
+
     repr_cols = ("description", "price", "category_title")
 
 
@@ -118,6 +122,10 @@ class User(db.Model):
         back_populates="in_basket", secondary="basket"
     )
 
+    favorites_products: Mapped[list["Product"]] = relationship(
+        back_populates="in_favorites", secondary="favorite"
+    )
+
     repr_cols = (
         "password",
         "register_at",
@@ -130,6 +138,15 @@ class User(db.Model):
 
 
 class Basket(db.Model):
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user.user_id", ondelete="CASCADE"), primary_key=True
+    )
+    product_id: Mapped[int] = mapped_column(
+        ForeignKey("product.product_id", ondelete="CASCADE"), primary_key=True
+    )
+
+
+class Favorite(db.Model):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("user.user_id", ondelete="CASCADE"), primary_key=True
     )
